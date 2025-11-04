@@ -36,6 +36,12 @@ const menuItems: MenuItem[] = [
     label: 'Histórico de Vendas',
     description: 'Vendas realizadas',
   },
+  {
+    href: '/estoque',
+    icon: '📋',
+    label: 'Estoque',
+    description: 'Controle de estoque',
+  },
 ]
 
 export default function Sidebar() {
