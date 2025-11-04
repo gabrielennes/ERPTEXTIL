@@ -1,0 +1,19 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.text {
+  font-size: 14px;
+  color: #374151;
+}
+
