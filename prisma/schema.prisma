@@ -10,9 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelos básicos para ERP Têxtil
-// Você pode expandir conforme necessário
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -23,5 +20,41 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model Produto {
+  id           String      @id @default(cuid())
+  nome         String
+  marca        String?
+  peso         Float?
+  precoCusto   Float?
+  descricao    String?
+  categoria    String?
+  ncm          String?
+  dimensoes    String? 
+  precoVenda   Float
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  variacoes    Variacao[]
+
+  @@map("produtos")
+}
+
+model Variacao {
+  id            String   @id @default(cuid())
+  sku           String
+  codigoBarras  String?
+  rfid          String?
+  tamanho       String?
+  cor           String?
+  estoque       Int      @default(0)
+  preco         Float?
+  produtoId     String
+  produto       Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([produtoId, sku])
+  @@map("variacoes")
 }
 

@@ -3,6 +3,13 @@
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
 .title {
   font-size: 32px;
   font-weight: 700;
@@ -13,7 +20,6 @@
 .subtitle {
   font-size: 16px;
   color: #6b7280;
-  margin-bottom: 32px;
 }
 
 .content {
@@ -22,6 +28,13 @@
   padding: 48px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  font-size: 18px;
+  color: #6b7280;
 }
 
 .emptyState {
@@ -60,6 +73,132 @@
 }
 
 .addButton:hover {
+  background: #1e3a8a;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.productCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.productCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.productHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.productName {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.productPrice {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.infoItem {
+  font-size: 14px;
+  color: #374151;
+}
+
+.infoItem strong {
+  color: #111827;
+  margin-right: 4px;
+}
+
+.variacoesList {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.variacoesList strong {
+  font-size: 14px;
+  color: #111827;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.skuTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skuTag {
+  background: #eff6ff;
+  color: #1e40af;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.viewButton,
+.editButton {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewButton {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.viewButton:hover {
+  background: #e5e7eb;
+}
+
+.editButton {
+  background: #1e40af;
+  color: white;
+}
+
+.editButton:hover {
   background: #1e3a8a;
 }
 
