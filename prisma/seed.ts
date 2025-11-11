@@ -1,13 +1,26 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('🌱 Iniciando seed...')
 
-  // Limpar dados existentes
+  // Limpar dados existentes (incluir User)
   await prisma.variacao.deleteMany()
   await prisma.produto.deleteMany()
+  await prisma.user.deleteMany()
+
+  // Criar usuário admin padrão
+  const adminPassword = await bcrypt.hash('admin', 10)
+  await prisma.user.create({
+    data: {
+      email: 'admin@admin.com',
+      name: 'Administrador',
+      password: adminPassword,
+      role: 'admin',
+    },
+  })
 
   // Produto 1: Camiseta Básica
   const camiseta = await prisma.produto.create({

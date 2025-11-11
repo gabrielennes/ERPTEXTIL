@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth'
 
 export async function GET() {
+  // Verificar autenticação
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Não autenticado' },
+      { status: 401 }
+    )
+  }
   try {
     const produtos = await prisma.produto.findMany({
       include: {
@@ -23,6 +32,15 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // Verificar autenticação
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Não autenticado' },
+      { status: 401 }
+    )
+  }
+
   try {
     const body = await request.json()
     const {
