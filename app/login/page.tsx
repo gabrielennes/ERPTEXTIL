@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import styles from './login.module.css'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@admin.com')
-  const [password, setPassword] = useState('admin')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -56,7 +56,6 @@ export default function LoginPage() {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@admin.com"
             required
             disabled={loading}
           />
@@ -69,7 +68,6 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
             required
             disabled={loading}
           />
