@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   // Verificar autenticação
   const session = await getSession()
   if (!session) {
@@ -12,7 +12,23 @@ export async function GET() {
     )
   }
   try {
+    const { searchParams } = new URL(request.url)
+    const busca = searchParams.get('busca')
+
+    let where: any = {}
+
+    if (busca) {
+      where = {
+        OR: [
+          { nome: { contains: busca, mode: 'insensitive' } },
+          { variacoes: { some: { sku: { contains: busca, mode: 'insensitive' } } } },
+          { variacoes: { some: { codigoBarras: { contains: busca, mode: 'insensitive' } } } },
+        ],
+      }
+    }
+
     const produtos = await prisma.produto.findMany({
+      where,
       include: {
         variacoes: true,
       },
