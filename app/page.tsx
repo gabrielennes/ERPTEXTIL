@@ -1,6 +1,15 @@
 import MetricCard from '@/components/MetricCard'
 import ActionCard from '@/components/ActionCard'
 import ActivityItem from '@/components/ActivityItem'
+import {
+  BoxIcon,
+  LayersIcon,
+  TrendingUpIcon,
+  DollarSignIcon,
+  ShoppingCartIcon,
+  ClockIcon,
+} from '@/components/icons'
+import { CompanyLogo } from '@/components/Logo'
 import styles from './dashboard.module.css'
 
 export default function Dashboard() {
@@ -8,9 +17,9 @@ export default function Dashboard() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.welcomeBanner}>
-          <div className={styles.welcomeLogo}>S</div>
+          <CompanyLogo size={60} className={styles.welcomeLogo} />
           <div className={styles.welcomeContent}>
-            <h1 className={styles.welcomeTitle}>Bem-vindo ao ERP Têxtil</h1>
+            <h1 className={styles.welcomeTitle}>Fibras & Estilos</h1>
             <p className={styles.welcomeSubtitle}>
               Sistema completo para gestão de vendas e produtos
             </p>
@@ -24,25 +33,25 @@ export default function Dashboard() {
         <MetricCard
           title="Total de Produtos"
           value="0"
-          icon="📦"
+          icon={<BoxIcon size={24} />}
           iconColor="#3b82f6"
         />
         <MetricCard
           title="Variações Cadastradas"
           value="0"
-          icon="📦"
+          icon={<LayersIcon size={24} />}
           iconColor="#3b82f6"
         />
         <MetricCard
           title="Vendas Hoje"
           value="R$ 0,00"
-          icon="📈"
+          icon={<TrendingUpIcon size={24} />}
           iconColor="#10b981"
         />
         <MetricCard
           title="Total de Vendas"
           value="R$ 0,00"
-          icon="💰"
+          icon={<DollarSignIcon size={24} />}
           iconColor="#10b981"
         />
       </div>
@@ -51,21 +60,21 @@ export default function Dashboard() {
       <div className={styles.actionsGrid}>
         <ActionCard
           href="/produtos"
-          icon="📦"
+          icon={<BoxIcon size={48} />}
           title="Cadastro de Produtos"
           description="Gerenciar produtos e variações"
           iconColor="#1e40af"
         />
         <ActionCard
           href="/pdv"
-          icon="🛒"
+          icon={<ShoppingCartIcon size={48} />}
           title="PDV - Vendas"
           description="Realizar vendas"
           iconColor="#059669"
         />
         <ActionCard
           href="/vendas"
-          icon="🕐"
+          icon={<ClockIcon size={48} />}
           title="Histórico de Vendas"
           description="Consultar vendas realizadas"
           iconColor="#7c3aed"
@@ -75,12 +84,12 @@ export default function Dashboard() {
       <h2 className={styles.sectionTitle}>Atividade Recente</h2>
       <div className={styles.activityList}>
         <ActivityItem
-          icon="📦"
+          icon={<BoxIcon size={20} />}
           text="Produtos cadastrados: Sistema inicializado com produtos de exemplo"
           iconColor="#3b82f6"
         />
         <ActivityItem
-          icon="🛒"
+          icon={<ShoppingCartIcon size={20} />}
           text="PDV disponível: Sistema pronto para realizar vendas"
           iconColor="#10b981"
         />

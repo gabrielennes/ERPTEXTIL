@@ -1,9 +1,10 @@
 import Link from 'next/link'
+import { ReactNode } from 'react'
 import styles from './ActionCard.module.css'
 
 interface ActionCardProps {
   href: string
-  icon: string
+  icon: ReactNode
   title: string
   description: string
   iconColor?: string

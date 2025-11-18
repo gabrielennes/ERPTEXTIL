@@ -106,3 +106,10 @@
 - Considere implementar testes antes de adicionar mais funcionalidades
 
 
+
+
+
+
+
+
+

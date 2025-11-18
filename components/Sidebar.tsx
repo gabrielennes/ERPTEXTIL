@@ -2,19 +2,29 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
+import {
+  BoxIcon,
+  TrendingUpIcon,
+  DollarSignIcon,
+  ShoppingCartIcon,
+  ClockIcon,
+  ClipboardIcon,
+  BarChartIcon,
+} from '@/components/icons'
+import { CompanyLogo } from '@/components/Logo'
 import styles from './Sidebar.module.css'
 
 interface SubMenuItem {
   href: string
-  icon: string
+  icon: ReactNode
   label: string
   description: string
 }
 
 interface MenuItem {
   href?: string
-  icon: string
+  icon: ReactNode
   label: string
   description: string
   subItems?: SubMenuItem[]
@@ -23,43 +33,43 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   {
     href: '/',
-    icon: '📊',
+    icon: <BarChartIcon size={24} />,
     label: 'Dashboard',
     description: 'Visão geral',
   },
   {
-    icon: '📦',
+    icon: <BoxIcon size={24} />,
     label: 'Produtos',
     description: 'Gestão de produtos',
     subItems: [
       {
         href: '/produtos',
-        icon: '📦',
+        icon: <BoxIcon size={20} />,
         label: 'Cadastro de Produtos',
         description: 'Gestão de produtos',
       },
       {
         href: '/estoque',
-        icon: '📋',
+        icon: <ClipboardIcon size={20} />,
         label: 'Estoque',
         description: 'Controle de estoque',
       },
     ],
   },
   {
-    icon: '💰',
+    icon: <DollarSignIcon size={24} />,
     label: 'Vendas',
     description: 'Gestão de vendas',
     subItems: [
       {
         href: '/pdv',
-        icon: '🛒',
+        icon: <ShoppingCartIcon size={20} />,
         label: 'PDV - Vendas',
         description: 'Ponto de venda',
       },
       {
         href: '/vendas',
-        icon: '🕐',
+        icon: <ClockIcon size={20} />,
         label: 'Histórico de Vendas',
         description: 'Vendas realizadas',
       },
@@ -142,9 +152,9 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <div className={styles.logoIcon}>S</div>
+        <CompanyLogo size={40} className={styles.logoIcon} />
         <div className={styles.logoText}>
-          <div className={styles.logoTitle}>ERP Têxtil</div>
+          <div className={styles.logoTitle}>Fibras & Estilos</div>
           <div className={styles.logoSubtitle}>ERP Sistema</div>
         </div>
       </div>
@@ -231,7 +241,21 @@ export default function Sidebar() {
             className={styles.actionButton}
             title="Sair do sistema"
           >
-            <span className={styles.actionIcon}>🚪</span>
+            <svg
+              className={styles.actionIcon}
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
             <span className={styles.actionText}>Sair</span>
           </button>
         </div>

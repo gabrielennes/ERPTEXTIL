@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { CompanyLogo } from '@/components/Logo'
 import styles from './login.module.css'
 
 export default function LoginPage() {
@@ -42,8 +43,8 @@ export default function LoginPage() {
     <div className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.card}>
         <div className={styles.logo}>
-          <div className={styles.logoIcon}>S</div>
-          <h2 className={styles.title}>ERP Têxtil</h2>
+          <CompanyLogo size={64} className={styles.logoIcon} />
+          <h2 className={styles.title}>Fibras & Estilos</h2>
           <p className={styles.subtitle}>Faça login para continuar</p>
         </div>
 

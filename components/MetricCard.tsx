@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
 import styles from './MetricCard.module.css'
 
 interface MetricCardProps {
   title: string
   value: string
-  icon: string
+  icon: ReactNode
   iconColor?: string
 }
 

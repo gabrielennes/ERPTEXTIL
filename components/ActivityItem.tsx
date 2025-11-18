@@ -1,7 +1,8 @@
+import { ReactNode } from 'react'
 import styles from './ActivityItem.module.css'
 
 interface ActivityItemProps {
-  icon: string
+  icon: ReactNode
   text: string
   iconColor?: string
 }
