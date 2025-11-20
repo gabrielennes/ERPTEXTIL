@@ -1,4 +1,7 @@
+'use client'
+
 import styles from './vendas.module.css'
+import { ClockIcon } from '@/components/icons'
 
 export default function VendasPage() {
   return (
@@ -8,7 +11,9 @@ export default function VendasPage() {
 
       <div className={styles.content}>
         <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>🕐</div>
+          <div className={styles.emptyIcon}>
+            <ClockIcon size={64} color="#7c3aed" />
+          </div>
           <h2>Nenhuma venda realizada</h2>
           <p>As vendas realizadas aparecerão aqui</p>
         </div>

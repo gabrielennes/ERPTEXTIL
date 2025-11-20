@@ -1,16 +1,42 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { CompanyLogo } from '@/components/Logo'
 import styles from './login.module.css'
 
+interface Empresa {
+  id: string
+  nome: string
+}
+
 export default function LoginPage() {
+  const [isCadastro, setIsCadastro] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [empresaId, setEmpresaId] = useState('')
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    if (isCadastro) {
+      fetchEmpresas()
+    }
+  }, [isCadastro])
+
+  const fetchEmpresas = async () => {
+    try {
+      const response = await fetch('/api/empresas')
+      if (response.ok) {
+        const data = await response.json()
+        setEmpresas(data)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar empresas:', error)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,19 +44,46 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      if (isCadastro) {
+        // Cadastro
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email, 
+            password, 
+            empresaId: empresaId || undefined 
+          })
+        })
 
-      const data = await res.json()
+        const data = await res.json()
 
-      if (res.ok) {
-        router.push('/')
-        router.refresh()
+        if (res.ok) {
+          setError('')
+          alert('Cadastro realizado com sucesso! Faça login para continuar.')
+          setIsCadastro(false)
+          setEmail('')
+          setPassword('')
+          setEmpresaId('')
+        } else {
+          setError(data.error || 'Erro ao realizar cadastro')
+        }
       } else {
-        setError(data.error || 'Usuário ou senha inválidos')
+        // Login
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
+
+        const data = await res.json()
+
+        if (res.ok) {
+          router.push('/')
+          router.refresh()
+        } else {
+          setError(data.error || 'Usuário ou senha inválidos')
+        }
       }
     } catch (err) {
       setError('Erro ao conectar com o servidor')
@@ -44,11 +97,34 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className={styles.card}>
         <div className={styles.logo}>
           <CompanyLogo size={64} className={styles.logoIcon} />
-          <h2 className={styles.title}>Fibras & Estilos</h2>
-          <p className={styles.subtitle}>Faça login para continuar</p>
+          <h2 className={styles.title}>Voltrix</h2>
+          <p className={styles.subtitle}>
+            {isCadastro ? 'Crie sua conta' : 'Faça login para continuar'}
+          </p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
+
+        {isCadastro && (
+          <div className={styles.field}>
+            <label htmlFor="empresa">Empresa</label>
+            <select
+              id="empresa"
+              value={empresaId}
+              onChange={(e) => setEmpresaId(e.target.value)}
+              required={isCadastro}
+              disabled={loading}
+              className={styles.select}
+            >
+              <option value="">Selecione uma empresa</option>
+              {empresas.map((empresa) => (
+                <option key={empresa.id} value={empresa.id}>
+                  {empresa.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className={styles.field}>
           <label htmlFor="email">Usuário</label>
@@ -76,7 +152,25 @@ export default function LoginPage() {
 
         <button type="submit" className={styles.button} disabled={loading}>
           {loading && <span className={styles.loading}></span>}
-          {loading ? 'Entrando...' : 'Entrar'}
+          {loading 
+            ? (isCadastro ? 'Cadastrando...' : 'Entrando...') 
+            : (isCadastro ? 'Cadastrar' : 'Entrar')
+          }
+        </button>
+
+        <button
+          type="button"
+          className={styles.cadastroButton}
+          onClick={() => {
+            setIsCadastro(!isCadastro)
+            setError('')
+            setEmail('')
+            setPassword('')
+            setEmpresaId('')
+          }}
+          disabled={loading}
+        >
+          {isCadastro ? 'Voltar para Login' : 'Cadastro'}
         </button>
       </form>
     </div>

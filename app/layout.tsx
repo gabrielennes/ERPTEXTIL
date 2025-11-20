@@ -3,7 +3,7 @@ import Layout from '@/components/Layout'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Fibras & Estilos - ERP',
+  title: 'Voltrix - ERP',
   description: 'Sistema de Gestão Empresarial para Indústria Têxtil',
 }
 

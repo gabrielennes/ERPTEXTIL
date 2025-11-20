@@ -59,6 +59,7 @@ export default function ProductModal({
     ncm: '',
     dimensoes: '',
     precoVenda: '',
+    dataCadastro: '',
   })
 
   const [variacoes, setVariacoes] = useState<Variacao[]>([
@@ -87,6 +88,7 @@ export default function ProductModal({
         ncm: '',
         dimensoes: '',
         precoVenda: '',
+        dataCadastro: '',
       })
       setVariacoes([
         {
@@ -101,6 +103,15 @@ export default function ProductModal({
       ])
     } else if (produto) {
       // Preencher quando estiver editando
+      // Formatar data para o formato DD/MM/YYYY
+      const formatDateForInput = (dateString: string) => {
+        const date = new Date(dateString)
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+        return `${day}/${month}/${year}`
+      }
+
       setFormData({
         nome: produto.nome,
         marca: produto.marca || '',
@@ -111,6 +122,7 @@ export default function ProductModal({
         ncm: produto.ncm || '',
         dimensoes: produto.dimensoes || '',
         precoVenda: produto.precoVenda.toString(),
+        dataCadastro: produto.createdAt ? formatDateForInput(produto.createdAt) : '',
       })
       setVariacoes(
         produto.variacoes.length > 0
@@ -144,7 +156,23 @@ export default function ProductModal({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    
+    // Aplicar máscara para data (DD/MM/AAAA)
+    if (name === 'dataCadastro') {
+      let maskedValue = value.replace(/\D/g, '') // Remove tudo que não é dígito
+      if (maskedValue.length > 0) {
+        if (maskedValue.length <= 2) {
+          maskedValue = maskedValue
+        } else if (maskedValue.length <= 4) {
+          maskedValue = maskedValue.slice(0, 2) + '/' + maskedValue.slice(2)
+        } else {
+          maskedValue = maskedValue.slice(0, 2) + '/' + maskedValue.slice(2, 4) + '/' + maskedValue.slice(4, 8)
+        }
+      }
+      setFormData((prev) => ({ ...prev, [name]: maskedValue }))
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleVariacaoChange = (
@@ -183,11 +211,22 @@ export default function ProductModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Converter data de DD/MM/AAAA para ISO string
+    let dataCadastroISO: string | undefined = undefined
+    if (formData.dataCadastro) {
+      const [day, month, year] = formData.dataCadastro.split('/')
+      if (day && month && year) {
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+        dataCadastroISO = date.toISOString()
+      }
+    }
+
     const produtoData = {
       ...formData,
       peso: formData.peso ? parseFloat(formData.peso) : null,
       precoCusto: formData.precoCusto ? parseFloat(formData.precoCusto) : null,
       precoVenda: parseFloat(formData.precoVenda),
+      dataCadastro: dataCadastroISO,
       variacoes: variacoes.map((v) => ({
         ...v,
         estoque: v.estoque,
@@ -345,6 +384,25 @@ export default function ProductModal({
                   className={styles.input}
                   required
                 />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="dataCadastro" className={styles.label}>
+                  Data de Cadastro
+                </label>
+                <input
+                  type="text"
+                  id="dataCadastro"
+                  name="dataCadastro"
+                  value={formData.dataCadastro}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="DD/MM/AAAA (ex: 19/11/2025)"
+                  pattern="\d{2}/\d{2}/\d{4}"
+                />
+                <small style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                  Formato: DD/MM/AAAA
+                </small>
               </div>
             </div>
           </div>

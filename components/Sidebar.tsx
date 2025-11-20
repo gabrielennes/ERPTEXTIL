@@ -154,8 +154,8 @@ export default function Sidebar() {
       <div className={styles.logo}>
         <CompanyLogo size={40} className={styles.logoIcon} />
         <div className={styles.logoText}>
-          <div className={styles.logoTitle}>Fibras & Estilos</div>
-          <div className={styles.logoSubtitle}>ERP Sistema</div>
+          <div className={styles.logoTitle}>Voltrix</div>
+          <div className={styles.logoSubtitle}>Indústria Têxtil</div>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import ProductModal from '@/components/ProductModal'
 import ViewProductModal from '@/components/ViewProductModal'
+import { DownloadIcon } from '@/components/icons'
 import styles from './produtos.module.css'
 
 interface Variacao {
@@ -105,6 +106,130 @@ export default function ProdutosPage() {
     setIsModalOpen(true)
   }
 
+  const handleExportCSV = () => {
+    if (produtos.length === 0) {
+      alert('Não há produtos para exportar')
+      return
+    }
+
+    // Cabeçalhos do CSV
+    const headers = [
+      'Nome do Produto',
+      'Marca',
+      'Peso (kg)',
+      'Preço de Custo',
+      'Descrição',
+      'Categoria',
+      'NCM',
+      'Dimensões',
+      'Preço de Venda',
+      'Data de Cadastro',
+      'SKU',
+      'Código de Barras',
+      'RFID',
+      'Tamanho',
+      'Cor',
+      'Estoque',
+      'Preço Variação',
+    ]
+
+    // Criar linhas do CSV
+    const rows: string[][] = []
+    
+    produtos.forEach((produto) => {
+      const dataCadastro = new Date(produto.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+
+      // Se o produto tem variações, criar uma linha para cada variação
+      if (produto.variacoes.length > 0) {
+        produto.variacoes.forEach((variacao) => {
+          rows.push([
+            produto.nome,
+            produto.marca || '',
+            produto.peso?.toString() || '',
+            produto.precoCusto?.toString() || '',
+            produto.descricao || '',
+            produto.categoria || '',
+            produto.ncm || '',
+            produto.dimensoes || '',
+            produto.precoVenda.toString(),
+            dataCadastro,
+            variacao.sku,
+            variacao.codigoBarras || '',
+            variacao.rfid || '',
+            variacao.tamanho || '',
+            variacao.cor || '',
+            variacao.estoque.toString(),
+            variacao.preco?.toString() || '',
+          ])
+        })
+      } else {
+        // Se não tem variações, criar uma linha sem dados de variação
+        rows.push([
+          produto.nome,
+          produto.marca || '',
+          produto.peso?.toString() || '',
+          produto.precoCusto?.toString() || '',
+          produto.descricao || '',
+          produto.categoria || '',
+          produto.ncm || '',
+          produto.dimensoes || '',
+          produto.precoVenda.toString(),
+          dataCadastro,
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ])
+      }
+    })
+
+    // Função para escapar valores CSV (tratar ponto e vírgula e aspas)
+    const escapeCSV = (value: string): string => {
+      // Sempre envolver em aspas para garantir que campos com espaços, quebras de linha, etc sejam tratados corretamente
+      const escaped = value.replace(/"/g, '""') // Escapar aspas duplas
+      return `"${escaped}"`
+    }
+
+    // Usar ponto e vírgula como separador (padrão brasileiro)
+    const separator = ';'
+    
+    // Converter para formato CSV
+    const csvContent = [
+      headers.map(escapeCSV).join(separator),
+      ...rows.map((row) => row.map(escapeCSV).join(separator)),
+    ].join('\n')
+
+    // Adicionar BOM para Excel reconhecer UTF-8
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+    
+    // Criar link de download
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    
+    // Nome do arquivo com data atual
+    const hoje = new Date()
+    const dataFormatada = hoje.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).replace(/\//g, '-')
+    
+    link.setAttribute('download', `produtos_${dataFormatada}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const handleOpenEdit = async (produtoId: string) => {
     try {
       const response = await fetch(`/api/produtos/${produtoId}`)
@@ -128,12 +253,22 @@ export default function ProdutosPage() {
           <h1 className={styles.title}>Cadastro de Produtos</h1>
           <p className={styles.subtitle}>Gestão de produtos e variações</p>
         </div>
-        <button
-          className={styles.addButton}
-          onClick={() => setIsModalOpen(true)}
-        >
-          + Adicionar Produto
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            className={styles.exportButton}
+            onClick={handleExportCSV}
+            disabled={produtos.length === 0}
+          >
+            <DownloadIcon size={20} color="white" style={{ marginRight: '8px' }} />
+            Exportar CSV
+          </button>
+          <button
+            className={styles.addButton}
+            onClick={() => setIsModalOpen(true)}
+          >
+            + Adicionar Produto
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -179,6 +314,14 @@ export default function ProdutosPage() {
                 <div className={styles.infoItem}>
                   <strong>Total em Estoque:</strong>{' '}
                   {produto.variacoes.reduce((acc, v) => acc + v.estoque, 0)}
+                </div>
+                <div className={styles.infoItem}>
+                  <strong>Data de Cadastro:</strong>{' '}
+                  {new Date(produto.createdAt).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })}
                 </div>
               </div>
               <div className={styles.variacoesList}>

@@ -1,15 +1,11 @@
 'use client'
 
-import { useId } from 'react'
-
 interface LogoProps {
   className?: string
   size?: number
 }
 
 export function CompanyLogo({ className = '', size = 60 }: LogoProps) {
-  const gradientId = useId()
-  
   return (
     <svg
       className={className}
@@ -19,40 +15,29 @@ export function CompanyLogo({ className = '', size = 60 }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Fundo com gradiente */}
-      <rect width="60" height="60" rx="12" fill={`url(#${gradientId})`} />
+      {/* Quadrado azul sólido com cantos arredondados */}
+      <rect width="60" height="60" rx="6" fill="#3b82f6" />
       
-      {/* Padrão de fios/tecido */}
-      <g opacity="0.9">
+      {/* Padrão de grade branco */}
+      <g stroke="white" strokeWidth="1.5" opacity="0.9">
         {/* Linhas horizontais */}
-        <line x1="8" y1="15" x2="52" y2="15" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="22" x2="52" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="29" x2="52" y2="29" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="36" x2="52" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="43" x2="52" y2="43" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="50" x2="52" y2="50" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <line x1="10" y1="12" x2="50" y2="12" />
+        <line x1="10" y1="18" x2="50" y2="18" />
+        <line x1="10" y1="24" x2="50" y2="24" />
+        <line x1="10" y1="30" x2="50" y2="30" />
+        <line x1="10" y1="36" x2="50" y2="36" />
+        <line x1="10" y1="42" x2="50" y2="42" />
+        <line x1="10" y1="48" x2="50" y2="48" />
         
-        {/* Linhas verticais entrelaçadas */}
-        <line x1="15" y1="8" x2="15" y2="52" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-        <line x1="30" y1="8" x2="30" y2="52" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-        <line x1="45" y1="8" x2="45" y2="52" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+        {/* Linhas verticais */}
+        <line x1="12" y1="10" x2="12" y2="50" />
+        <line x1="18" y1="10" x2="18" y2="50" />
+        <line x1="24" y1="10" x2="24" y2="50" />
+        <line x1="30" y1="10" x2="30" y2="50" />
+        <line x1="36" y1="10" x2="36" y2="50" />
+        <line x1="42" y1="10" x2="42" y2="50" />
+        <line x1="48" y1="10" x2="48" y2="50" />
       </g>
-      
-      {/* Letra F estilizada no centro */}
-      <path
-        d="M20 18 L20 42 M20 18 L35 18 M20 30 L30 30"
-        stroke="white"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1e40af" />
-          <stop offset="100%" stopColor="#3b82f6" />
-        </linearGradient>
-      </defs>
     </svg>
   )
 }

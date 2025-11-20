@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       dimensoes,
       precoVenda,
       variacoes,
+      dataCadastro,
     } = body
 
     // Validações básicas
@@ -83,6 +84,7 @@ export async function POST(request: NextRequest) {
         ncm: ncm || null,
         dimensoes: dimensoes || null,
         precoVenda: parseFloat(precoVenda),
+        createdAt: dataCadastro ? new Date(dataCadastro) : undefined,
         variacoes: {
           create: variacoes.map((v: any) => ({
             sku: v.sku,

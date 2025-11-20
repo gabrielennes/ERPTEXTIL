@@ -70,6 +70,7 @@ export async function PUT(
       dimensoes,
       precoVenda,
       variacoes,
+      dataCadastro,
     } = body
 
     // Validações básicas
@@ -107,6 +108,7 @@ export async function PUT(
           ncm: ncm || null,
           dimensoes: dimensoes || null,
           precoVenda: parseFloat(precoVenda),
+          createdAt: dataCadastro ? new Date(dataCadastro) : undefined,
         },
       })
 

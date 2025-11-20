@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import styles from './pdv.module.css'
+import { ShoppingCartIcon } from '@/components/icons'
 
 interface ItemCarrinho {
   produto: any;
@@ -149,10 +150,15 @@ export default function PDVPage() {
 
       {/* Coluna direita: Carrinho de compras */}
       <div className={styles.rightPanel}>
-        <h2 className={styles.carrinhoTitulo}><span style={{marginRight:8}}>🛒</span>Carrinho de Compras</h2>
+        <h2 className={styles.carrinhoTitulo}>
+          <ShoppingCartIcon size={20} color="#374151" style={{ marginRight: '8px' }} />
+          Carrinho de Compras
+        </h2>
         {carrinho.length === 0 ? (
           <div className={styles.carrinhoVazio}>
-            <span style={{fontSize:42}}>🛒</span>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+              <ShoppingCartIcon size={64} color="#059669" />
+            </div>
             <p>Carrinho vazio<br/><span style={{fontSize:14}}>Adicione produtos para começar</span></p>
           </div>
         ) : (

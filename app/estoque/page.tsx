@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import styles from './estoque.module.css'
+import { Cube3DIcon, StackLayersIcon, MiniChartUpIcon, MiniChartDownIcon, DownloadIcon } from '@/components/icons'
 
 interface Variacao {
   id: string
@@ -63,6 +64,94 @@ export default function EstoquePage() {
     p.variacoes.some((v) => v.estoque < 10)
   ).length
 
+  const handleExportCSV = () => {
+    if (produtosFiltrados.length === 0) {
+      alert('Não há produtos para exportar')
+      return
+    }
+
+    // Cabeçalhos do CSV
+    const headers = [
+      'Produto',
+      'Marca',
+      'SKU',
+      'Tamanho',
+      'Cor',
+      'Código de Barras',
+      'Estoque',
+      'Status',
+    ]
+
+    // Criar linhas do CSV
+    const rows: string[][] = []
+    
+    produtosFiltrados.forEach((produto) => {
+      produto.variacoes.forEach((variacao) => {
+        // Determinar status
+        let status = ''
+        if (variacao.estoque === 0) {
+          status = 'Esgotado'
+        } else if (variacao.estoque < 10) {
+          status = 'Baixo'
+        } else if (variacao.estoque < 50) {
+          status = 'Médio'
+        } else {
+          status = 'Bom'
+        }
+
+        rows.push([
+          produto.nome,
+          produto.marca || '',
+          variacao.sku,
+          variacao.tamanho || '',
+          variacao.cor || '',
+          variacao.codigoBarras || '',
+          variacao.estoque.toString(),
+          status,
+        ])
+      })
+    })
+
+    // Função para escapar valores CSV (tratar ponto e vírgula e aspas)
+    const escapeCSV = (value: string): string => {
+      // Sempre envolver em aspas para garantir que campos com espaços, quebras de linha, etc sejam tratados corretamente
+      const escaped = value.replace(/"/g, '""') // Escapar aspas duplas
+      return `"${escaped}"`
+    }
+
+    // Usar ponto e vírgula como separador (padrão brasileiro)
+    const separator = ';'
+    
+    // Converter para formato CSV
+    const csvContent = [
+      headers.map(escapeCSV).join(separator),
+      ...rows.map((row) => row.map(escapeCSV).join(separator)),
+    ].join('\n')
+
+    // Adicionar BOM para Excel reconhecer UTF-8
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+    
+    // Criar link de download
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    
+    // Nome do arquivo com data atual
+    const hoje = new Date()
+    const dataFormatada = hoje.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).replace(/\//g, '-')
+    
+    link.setAttribute('download', `estoque_${dataFormatada}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -78,32 +167,48 @@ export default function EstoquePage() {
           <h1 className={styles.title}>Estoque</h1>
           <p className={styles.subtitle}>Controle de estoque</p>
         </div>
+        <button
+          className={styles.exportButton}
+          onClick={handleExportCSV}
+          disabled={produtosFiltrados.length === 0}
+        >
+          <DownloadIcon size={20} color="white" style={{ marginRight: '8px' }} />
+          Exportar CSV
+        </button>
       </div>
 
       <div className={styles.metrics}>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon}>📦</div>
+          <div className={styles.metricIcon}>
+            <Cube3DIcon size={32} color="#3b82f6" />
+          </div>
           <div className={styles.metricContent}>
             <div className={styles.metricValue}>{produtos.length}</div>
             <div className={styles.metricLabel}>Produtos</div>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon}>📋</div>
+          <div className={styles.metricIcon}>
+            <StackLayersIcon size={32} color="#6366f1" />
+          </div>
           <div className={styles.metricContent}>
             <div className={styles.metricValue}>{totalVariacoes}</div>
             <div className={styles.metricLabel}>Variações</div>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon}>📊</div>
+          <div className={styles.metricIcon}>
+            <MiniChartUpIcon size={32} color="#10b981" />
+          </div>
           <div className={styles.metricContent}>
             <div className={styles.metricValue}>{totalEstoque}</div>
             <div className={styles.metricLabel}>Total em Estoque</div>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon}>⚠️</div>
+          <div className={styles.metricIcon}>
+            <MiniChartDownIcon size={32} color="#ef4444" />
+          </div>
           <div className={styles.metricContent}>
             <div className={styles.metricValue}>{produtosComEstoqueBaixo}</div>
             <div className={styles.metricLabel}>Estoque Baixo</div>

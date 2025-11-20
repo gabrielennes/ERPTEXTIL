@@ -53,8 +53,35 @@ model Variacao {
   produto       Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  itemVendas    ItemVenda[]
 
   @@unique([produtoId, sku])
   @@map("variacoes")
+}
+
+model Venda {
+  id          String      @id @default(cuid())
+  numero      String      @unique
+  total       Float
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  itens       ItemVenda[]
+
+  @@map("vendas")
+}
+
+model ItemVenda {
+  id          String   @id @default(cuid())
+  vendaId     String
+  venda       Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  variacaoId  String
+  variacao    Variacao @relation(fields: [variacaoId], references: [id])
+  quantidade  Int
+  precoUnitario Float
+  subtotal    Float
+  produtoNome String
+  createdAt   DateTime @default(now())
+
+  @@map("item_vendas")
 }
 

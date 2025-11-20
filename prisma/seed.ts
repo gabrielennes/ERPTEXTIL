@@ -10,6 +10,14 @@ async function main() {
   await prisma.variacao.deleteMany()
   await prisma.produto.deleteMany()
   await prisma.user.deleteMany()
+  await prisma.empresa.deleteMany()
+
+  // Criar empresa padrão
+  const empresaPadrao = await prisma.empresa.create({
+    data: {
+      nome: 'Voltrix',
+    },
+  })
 
   // Criar usuário admin padrão
   const adminPassword = await bcrypt.hash('admin', 10)
@@ -19,6 +27,7 @@ async function main() {
       name: 'Administrador',
       password: adminPassword,
       role: 'admin',
+      empresaId: empresaPadrao.id,
     },
   })
 
