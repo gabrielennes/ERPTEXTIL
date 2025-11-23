@@ -36,6 +36,7 @@ model Produto {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   variacoes    Variacao[]
+  itensVenda   ItensVenda[]
 
   @@map("produtos")
 }
@@ -53,8 +54,44 @@ model Variacao {
   produto       Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  itensVenda    ItensVenda[]
 
   @@unique([produtoId, sku])
   @@map("variacoes")
+}
+
+model Venda {
+  id            String      @id @default(cuid())
+  total         Float
+  subtotal      Float
+  desconto      Float       @default(0)
+  taxa          Float       @default(0)
+  metodoPagamento String
+  statusPagamento String?   // pending, approved, rejected, cancelled
+  paymentId     String?     // ID do pagamento no Mercado Pago
+  preferenceId  String?     // ID da preferência no Mercado Pago (para buscar pagamentos relacionados)
+  userId        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  itens         ItensVenda[]
+
+  @@map("vendas")
+}
+
+model ItensVenda {
+  id            String   @id @default(cuid())
+  vendaId       String
+  produtoId     String
+  variacaoId    String?
+  quantidade    Int
+  precoUnitario Float
+  subtotal      Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  venda         Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto       Produto  @relation(fields: [produtoId], references: [id], onDelete: Restrict)
+  variacao      Variacao? @relation(fields: [variacaoId], references: [id], onDelete: SetNull)
+
+  @@map("itens_venda")
 }
 
