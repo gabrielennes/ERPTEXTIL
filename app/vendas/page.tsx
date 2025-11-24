@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import styles from './vendas.module.css'
 import { ClockIcon } from '@/components/icons'
 
@@ -17,13 +18,192 @@ interface ItemVenda {
   } | null
 }
 
-      <div className={styles.content}>
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <ClockIcon size={64} color="#7c3aed" />
+interface Venda {
+  id: string
+  total: number
+  subtotal: number
+  desconto: number
+  taxa: number
+  metodoPagamento: string
+  statusPagamento: string
+  paymentId: string | null
+  preferenceId: string | null
+  createdAt: string
+  itens: ItemVenda[]
+}
+
+export default function VendasPage() {
+  const [vendas, setVendas] = useState<Venda[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const carregarVendas = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await fetch('/api/vendas')
+      if (response.ok) {
+        const data = await response.json()
+        setVendas(data.vendas || [])
+      } else {
+        setError('Erro ao carregar vendas')
+      }
+    } catch (err) {
+      console.error('Erro ao carregar vendas:', err)
+      setError('Erro ao carregar vendas')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    carregarVendas()
+  }, [])
+
+  const formatarData = (data: string) => {
+    const date = new Date(data)
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return { text: 'Aprovado', color: '#10b981' }
+      case 'pending':
+        return { text: 'Pendente', color: '#f59e0b' }
+      case 'rejected':
+        return { text: 'Rejeitado', color: '#ef4444' }
+      case 'cancelled':
+        return { text: 'Cancelado', color: '#6b7280' }
+      default:
+        return { text: status, color: '#6b7280' }
+    }
+  }
+
+  const getMetodoPagamentoIcon = (metodo: string) => {
+    switch (metodo) {
+      case 'dinheiro':
+        return '💵'
+      case 'cartao':
+        return '💳'
+      case 'pix':
+        return '📱'
+      default:
+        return '💰'
+    }
+  }
+
+  const atualizarStatusVenda = async (vendaId: string, paymentId: string | null) => {
+    try {
+      // Se não tiver paymentId, buscar pela preferência
+      if (!paymentId) {
+        // Buscar a venda para pegar o preferenceId
+        const venda = vendas.find(v => v.id === vendaId)
+        if (!venda || !venda.preferenceId) {
+          alert('Esta venda não possui Payment ID nem Preference ID. Use o botão "Usar Nº Transação" para atualizar.')
+          return
+        }
+
+        // Buscar e atualizar automaticamente pela preferência
+        const response = await fetch('/api/pagamentos/buscar-e-atualizar-automatico', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            vendaId,
+            preferenceId: venda.preferenceId,
+          }),
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.encontrado && result.paymentId) {
+            alert(`✅ Pagamento encontrado e atualizado!\n\nPayment ID: ${result.paymentId}\nStatus: ${result.status}`)
+            await carregarVendas()
+          } else {
+            // Se o pagamento foi aprovado no Mercado Pago mas não encontramos automaticamente,
+            // orientar o usuário a usar o número do comprovante
+            alert(`⏳ Pagamento não encontrado automaticamente.\n\nSe o pagamento já foi aprovado no Mercado Pago:\n\n1. Abra o comprovante do pagamento\n2. Procure pelo "Número da transação"\n3. Use o botão "🔢 Usar Nº Transação" e cole o número\n\nOu tente novamente em alguns segundos.`)
+          }
+        } else {
+          const error = await response.json()
+          alert(`Erro: ${error.error || 'Erro ao buscar pagamento'}\n\nSe o pagamento já foi aprovado, use o botão "🔢 Usar Nº Transação" com o número do comprovante.`)
+        }
+        return
+      }
+
+      // Se tiver paymentId, atualizar diretamente
+      const response = await fetch('/api/pagamentos/atualizar-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentId,
+          vendaId,
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        alert(`✅ Status atualizado!\n\nStatus: ${result.paymentStatus}`)
+        await carregarVendas()
+      } else {
+        const error = await response.json()
+        alert(`Erro: ${error.error || 'Erro ao atualizar status'}`)
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar status:', err)
+      alert('Erro ao atualizar status da venda')
+    }
+  }
+
+  const marcarComoAprovada = async (vendaId: string) => {
+    try {
+      const response = await fetch(`/api/vendas/${vendaId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ statusPagamento: 'approved' }),
+      })
+
+      if (response.ok) {
+        alert('Venda marcada como aprovada!')
+        await carregarVendas()
+      } else {
+        const error = await response.json()
+        alert(`Erro: ${error.error || 'Erro ao atualizar venda'}`)
+      }
+    } catch (err) {
+      console.error('Erro ao marcar como aprovada:', err)
+      alert('Erro ao atualizar venda')
+    }
+  }
+
+  const vendasAprovadas = vendas.filter((v) => v.statusPagamento === 'approved').length
+  const totalVendas = vendas
+    .filter((v) => v.statusPagamento === 'approved')
+    .reduce((acc, v) => acc + v.total, 0)
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>
+              <ClockIcon size={64} color="#7c3aed" />
+            </div>
+            <h2>Carregando vendas...</h2>
+            <p>As vendas realizadas aparecerão aqui</p>
           </div>
-          <h2>Nenhuma venda realizada</h2>
-          <p>As vendas realizadas aparecerão aqui</p>
         </div>
       </div>
     )
@@ -183,6 +363,7 @@ interface ItemVenda {
                       <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>
                         Venda #{venda.id.slice(-8).toUpperCase()}
                       </h3>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span
                         style={{
@@ -255,7 +436,6 @@ interface ItemVenda {
                           </button>
                         </div>
                       )}
-                    </div>
                     </div>
                     <div style={{ fontSize: '14px', color: '#6b7280' }}>
                       {formatarData(venda.createdAt)}

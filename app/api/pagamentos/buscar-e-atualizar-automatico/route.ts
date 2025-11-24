@@ -135,21 +135,98 @@ export async function POST(request: NextRequest) {
         }
       } catch (err: any) {
         console.error('Erro ao buscar preferência:', err.message)
+        // Se a preferência não foi encontrada, continuar com outras estratégias
       }
     }
 
-    // Estratégia 2: Buscar pagamentos recentes que possam corresponder
-    // A API do Mercado Pago não permite buscar diretamente por valor ou metadata
-    // Mas podemos tentar buscar pagamentos criados após a venda e verificar manualmente
-    
-    // Como a API não tem search direto, vamos retornar que não encontrou
-    // mas sugerir que o webhook deve processar
-    
+    // Estratégia 2: Buscar pagamentos aprovados recentes usando a API REST do Mercado Pago
+    // Como o pagamento foi aprovado, vamos tentar buscar pagamentos aprovados das últimas horas
+    try {
+      console.log('🔍 Tentando buscar pagamentos aprovados recentes...')
+      
+      // Usar a API REST do Mercado Pago para buscar pagamentos
+      // A API permite buscar por status e data
+      const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
+      if (accessToken) {
+        // Calcular data de início (2 horas antes da criação da venda)
+        const dataVenda = new Date(venda.createdAt)
+        const duasHorasAtras = new Date(dataVenda.getTime() - 2 * 60 * 60 * 1000)
+        const dataInicio = duasHorasAtras.toISOString().split('T')[0] // Formato YYYY-MM-DD
+        
+        // Buscar pagamentos aprovados recentes usando a API REST
+        const searchUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&date_created.from=${dataInicio}&sort=date_created&criteria=desc&limit=50`
+        
+        const searchResponse = await fetch(searchUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json()
+          console.log(`📊 Encontrados ${searchData.results?.length || 0} pagamentos aprovados recentes`)
+          
+          // Procurar pagamento que corresponda ao valor da venda
+          if (searchData.results && searchData.results.length > 0) {
+            for (const paymentResult of searchData.results) {
+              const valorCorresponde = Math.abs((paymentResult.transaction_amount || 0) - venda.total) < 0.01
+              const metadataCorresponde = paymentResult.metadata?.vendaId === vendaId
+              
+              // Verificar também se o payment_id está relacionado à preferência
+              let relacionadoPreferencia = false
+              if (prefId && paymentResult.order?.id) {
+                relacionadoPreferencia = paymentResult.order.id.toString() === prefId.toString()
+              }
+              
+              // Se o valor corresponde E (metadata corresponde OU está relacionado à preferência)
+              if (valorCorresponde && (metadataCorresponde || relacionadoPreferencia)) {
+                console.log(`✅ Pagamento encontrado via busca REST! ID: ${paymentResult.id}, Status: ${paymentResult.status}`)
+                
+                // Atualizar a venda
+                const vendaAtualizada = await prisma.venda.update({
+                  where: { id: vendaId },
+                  data: {
+                    paymentId: paymentResult.id?.toString() || null,
+                    statusPagamento: paymentResult.status === 'approved' ? 'approved' : 
+                                    paymentResult.status === 'rejected' ? 'rejected' : 
+                                    paymentResult.status === 'cancelled' ? 'cancelled' : 'pending',
+                  },
+                })
+                
+                console.log(`✅ Venda ${vendaId} atualizada automaticamente via busca REST!`)
+                
+                return NextResponse.json({
+                  encontrado: true,
+                  paymentId: paymentResult.id,
+                  status: paymentResult.status,
+                  paymentData: {
+                    id: paymentResult.id,
+                    status: paymentResult.status,
+                    status_detail: paymentResult.status_detail,
+                    transaction_amount: paymentResult.transaction_amount,
+                  },
+                  venda: vendaAtualizada,
+                  metodo: 'busca_rest_aprovados',
+                })
+              }
+            }
+          }
+        }
+      }
+    } catch (searchError: any) {
+      console.error('Erro ao buscar pagamentos via REST:', searchError.message)
+    }
+
+    // Estratégia 3: Se ainda não encontrou, retornar que não encontrou mas com sugestão
     return NextResponse.json({
       encontrado: false,
       message: 'Pagamento não encontrado automaticamente ainda',
       vendaId,
-      sugestao: 'O webhook do Mercado Pago deve atualizar automaticamente em alguns segundos. Se não atualizar, verifique o webhook no painel do Mercado Pago.',
+      valor: venda.total,
+      preferenceId: prefId,
+      sugestao: 'O pagamento pode estar sendo processado. Tente usar o botão "Usar Nº Transação" com o número do comprovante do Mercado Pago.',
     })
   } catch (error: any) {
     console.error('Erro ao buscar e atualizar automaticamente:', error)

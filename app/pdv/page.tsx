@@ -2,7 +2,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/library'
 import styles from './pdv.module.css'
-import { ShoppingCartIcon } from '@/components/icons'
+import ViewProductModal from '@/components/ViewProductModal'
+import MetricCard from '@/components/MetricCard'
 
 interface ItemCarrinho {
   produto: any;
@@ -97,14 +98,13 @@ export default function PDVPage() {
               }, 3000)
             })
           } else if (preferenceId) {
-            // Se tiver preferenceId mas não paymentId, verificar se o pagamento foi realmente processado
-            console.log('🔍 Verificando pagamento com preferenceId:', preferenceId)
-            console.log('⏳ Aguardando alguns segundos para o pagamento ser processado...')
+            // Se tiver preferenceId mas não paymentId, buscar automaticamente
+            console.log('🔍 Buscando pagamento com preferenceId:', preferenceId)
             
-            // Aguardar 3 segundos antes de verificar (dar tempo para o Mercado Pago processar)
-            setTimeout(() => {
-              // Primeiro, buscar o vendaId do preferenceId para passar na busca
-              // Tentar buscar e atualizar automaticamente
+            // Função para buscar pagamento com retry
+            const buscarPagamento = (tentativa = 1, maxTentativas = 6) => {
+              console.log(`🔄 Tentativa ${tentativa}/${maxTentativas} de buscar pagamento...`)
+              
               fetch('/api/pagamentos/buscar-por-preference', {
                 method: 'POST',
                 headers: {
@@ -114,131 +114,50 @@ export default function PDVPage() {
                   preferenceId,
                 }),
               })
-              .then(async (resPref) => {
-                const dataPref = await resPref.json()
-                const vendaId = dataPref.venda?.id
-                
-                // Agora buscar e atualizar automaticamente com o vendaId
-                return fetch('/api/pagamentos/buscar-e-atualizar-automatico', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    preferenceId,
-                    vendaId,
-                  }),
-                })
-              })
               .then(async (res) => {
                 const data = await res.json()
-                console.log('📊 Resultado da busca automática:', data)
+                console.log('📊 Resultado da busca:', data)
                 
                 if (data.encontrado && data.paymentId) {
-                  console.log('✅ Pagamento encontrado e atualizado automaticamente! Payment ID:', data.paymentId)
-                  alert(`✅ Pagamento confirmado e processado automaticamente!\n\nVenda: ${data.venda?.id?.slice(-8) || 'N/A'}\nStatus: ${data.status}\nPayment ID: ${data.paymentId}`)
-                  setCarrinho([])
-                  setTimeout(() => {
-                    window.location.href = '/vendas'
-                  }, 2000)
-                  return
-                }
-                
-                // Se não encontrou, tentar buscar por preference
-                return fetch('/api/pagamentos/buscar-por-preference', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    preferenceId,
-                  }),
-                })
-              })
-              .then(async (res) => {
-                if (!res) {
-                  // Se não retornou res, já foi processado na busca automática
-                  return
-                }
-                const data = await res.json()
-                console.log('📊 Resultado da busca por preference:', data)
-                
-                if (data.encontrado && data.paymentId) {
-                  // Se encontrou o pagamento, já foi atualizado pela API
-                  console.log('✅ Pagamento encontrado e atualizado! Payment ID:', data.paymentId)
+                  // Pagamento encontrado e já atualizado pela API
+                  console.log('✅ Pagamento encontrado! Payment ID:', data.paymentId)
                   alert(`✅ Pagamento confirmado e processado!\n\nVenda: ${data.venda?.id?.slice(-8) || 'N/A'}\nStatus: ${data.status}\nPayment ID: ${data.paymentId}`)
                   setCarrinho([])
                   setTimeout(() => {
                     window.location.href = '/vendas'
                   }, 2000)
+                } else if (tentativa < maxTentativas && data.tentarNovamente !== false) {
+                  // Tentar novamente após intervalo crescente (2s, 4s, 6s, 8s, 10s)
+                  const intervalo = 2000 * tentativa
+                  console.log(`⏳ Aguardando ${intervalo/1000}s antes da próxima tentativa...`)
+                  setTimeout(() => buscarPagamento(tentativa + 1, maxTentativas), intervalo)
                 } else {
-                  // Se não encontrou, tentar verificar novamente (pode estar processando)
-                  console.warn('⚠️ Pagamento não encontrado ainda, tentando verificar novamente...')
-                  
-                  // Tentar mais algumas vezes (até 5 tentativas, com intervalos crescentes)
-                  let tentativas = 0
-                  const maxTentativas = 5
-                  
-                  const tentarBuscar = () => {
-                    tentativas++
-                    console.log(`🔄 Tentativa ${tentativas}/${maxTentativas} de buscar pagamento...`)
-                    
-                    fetch('/api/pagamentos/buscar-por-preference', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        preferenceId,
-                      }),
-                    })
-                    .then(async (res2) => {
-                      const data2 = await res2.json()
-                      if (data2.encontrado && data2.paymentId) {
-                        alert(`✅ Pagamento confirmado automaticamente!\n\nVenda: ${data2.venda?.id?.slice(-8) || 'N/A'}\nStatus: ${data2.status}\nPayment ID: ${data2.paymentId}`)
-                        setCarrinho([])
-                        setTimeout(() => {
-                          window.location.href = '/vendas'
-                        }, 2000)
-                      } else if (tentativas < maxTentativas && data2.tentarNovamente) {
-                        // Tentar novamente após um intervalo maior
-                        setTimeout(tentarBuscar, 3000 * tentativas) // Intervalo crescente: 3s, 6s, 9s, 12s
-                      } else {
-                        // Última tentativa falhou - redirecionar para vendas
-                        // O webhook deve processar em background
-                        alert(`⏳ Pagamento está sendo processado...\n\nO sistema continuará tentando atualizar automaticamente em background.\n\nA venda foi criada. Você será redirecionado para a página de vendas.\n\nSe o status não atualizar em alguns minutos, use o botão "🔄 Atualizar" na venda.`)
-                        setCarrinho([])
-                        setTimeout(() => {
-                          window.location.href = '/vendas'
-                        }, 2000)
-                      }
-                    })
-                    .catch(() => {
-                      if (tentativas < maxTentativas) {
-                        setTimeout(tentarBuscar, 3000 * tentativas)
-                      } else {
-                        alert(`⏳ Pagamento está sendo processado...\n\nA venda foi criada. O webhook deve atualizar automaticamente em alguns segundos.`)
-                        setCarrinho([])
-                        setTimeout(() => {
-                          window.location.href = '/vendas'
-                        }, 2000)
-                      }
-                    })
-                  }
-                  
-                  // Primeira tentativa após 2 segundos
-                  setTimeout(tentarBuscar, 2000)
+                  // Última tentativa falhou - redirecionar para vendas
+                  // O webhook deve processar em background
+                  alert(`⏳ Pagamento está sendo processado...\n\nO sistema continuará tentando atualizar automaticamente em background.\n\nA venda foi criada. Você será redirecionado para a página de vendas.\n\nSe o status não atualizar em alguns minutos, use o botão "🔄 Atualizar" na venda.`)
+                  setCarrinho([])
+                  setTimeout(() => {
+                    window.location.href = '/vendas'
+                  }, 2000)
                 }
               })
               .catch((err) => {
-                console.error('❌ Erro ao verificar:', err)
-                alert(`⚠️ Não foi possível verificar o pagamento.\n\nPreference ID: ${preferenceId}\n\nErro: ${err.message}\n\nA venda foi criada. Verifique manualmente no Mercado Pago.`)
-                setCarrinho([])
-                setTimeout(() => {
-                  window.location.href = '/vendas'
-                }, 3000)
+                console.error('❌ Erro ao buscar pagamento:', err)
+                if (tentativa < maxTentativas) {
+                  const intervalo = 2000 * tentativa
+                  setTimeout(() => buscarPagamento(tentativa + 1, maxTentativas), intervalo)
+                } else {
+                  alert(`⚠️ Não foi possível verificar o pagamento após várias tentativas.\n\nPreference ID: ${preferenceId}\n\nA venda foi criada. O webhook deve atualizar automaticamente em alguns segundos.\n\nSe não atualizar, verifique manualmente na página de vendas.`)
+                  setCarrinho([])
+                  setTimeout(() => {
+                    window.location.href = '/vendas'
+                  }, 3000)
+                }
               })
-            }, 3000) // Aguardar 3 segundos
+            }
+            
+            // Aguardar 2 segundos antes da primeira tentativa (dar tempo para o Mercado Pago processar)
+            setTimeout(() => buscarPagamento(1), 2000)
           } else {
             console.warn('⚠️ Retornou do Mercado Pago mas sem paymentId ou preferenceId')
             console.log('URL params:', { status, paymentId, preferenceId })
@@ -771,36 +690,31 @@ export default function PDVPage() {
         </div>
       </div>
 
-      {/* Coluna direita: Carrinho de compras */}
-      <div className={styles.rightPanel}>
-        <h2 className={styles.carrinhoTitulo}>
-          <ShoppingCartIcon size={20} color="#374151" style={{ marginRight: '8px' }} />
-          Carrinho de Compras
-        </h2>
-        {carrinho.length === 0 ? (
-          <div className={styles.carrinhoVazio}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-              <ShoppingCartIcon size={64} color="#059669" />
+      <div className={styles.pdvGrid}>
+        {/* Coluna esquerda - Leitor e Busca */}
+        <div className={styles.leftPanel}>
+          {/* Leitor de Etiquetas */}
+          <div className={styles.leitorBox}>
+            <h2 className={styles.leitorTitulo}>
+              <span>📷</span>
+              Leitor de Etiquetas
+            </h2>
+            <div className={styles.leitorCamera}>
+              {leitorAtivo ? (
+                <video
+                  ref={videoRef}
+                  className={styles.videoElement}
+                  autoPlay
+                  playsInline
+                  muted
+                />
+              ) : (
+                <span style={{ fontSize: 64, color: '#9CA3AF', opacity: 0.6 }}>📷</span>
+              )}
             </div>
-            <p>Carrinho vazio<br/><span style={{fontSize:14}}>Adicione produtos para começar</span></p>
-          </div>
-        ) : (
-          <div className={styles.carrinhoLista}>
-            {carrinho.map(item => (
-              <div className={styles.carrinhoItem} key={item.produto.id}>
-                <div style={{flex:1}}>
-                  <div style={{fontWeight:600}}>{item.produto.nome}</div>
-                  <div style={{fontSize:13, color:'gray'}}>SKU: {item.produto.variacoes?.[0]?.sku}</div>
-                  <div style={{fontSize:13}}>Qtd: {item.quantidade}</div>
-                </div>
-                <div style={{fontWeight:600,marginRight:16}}>
-                  R$ {(item.produto.precoVenda * item.quantidade).toFixed(2)}
-                </div>
-                <button
-                  className={styles.removeItemButton}
-                  onClick={() => removerItemCarrinho(item.produto.id)}
-                  title="Remover"
-                >✖</button>
+            {erroCamera && (
+              <div className={styles.errorMsg} style={{ marginBottom: 12 }}>
+                {erroCamera}
               </div>
             )}
             <button 

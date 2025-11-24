@@ -39,9 +39,42 @@ export async function POST(request: NextRequest) {
       let vendaId = paymentData.metadata?.vendaId
       
       // Se não tiver no metadata do pagamento, tentar buscar pela preferência
-      if (!vendaId && paymentData.order?.id) {
-        // Se tiver order_id, pode estar relacionado a uma preferência
-        console.log('🔍 Tentando buscar venda pela order_id:', paymentData.order.id)
+      if (!vendaId) {
+        // O pagamento pode ter uma referência à preferência através do order_id ou external_reference
+        let preferenceId = null
+        
+        // Tentar pegar preferenceId do order_id (alguns pagamentos têm isso)
+        if (paymentData.order?.id) {
+          console.log('🔍 Tentando buscar venda pela order_id:', paymentData.order.id)
+          // O order_id pode ser o preferenceId
+          preferenceId = paymentData.order.id
+        }
+        
+        // Tentar pegar do external_reference (se configurado)
+        if (!preferenceId && paymentData.external_reference) {
+          preferenceId = paymentData.external_reference
+        }
+        
+        // Se encontrou preferenceId, buscar venda pelo preferenceId salvo no banco
+        if (preferenceId) {
+          try {
+            const vendaPorPreference = await prisma.venda.findFirst({
+              where: {
+                preferenceId: preferenceId,
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            })
+            
+            if (vendaPorPreference) {
+              vendaId = vendaPorPreference.id
+              console.log(`✅ Venda encontrada pelo preferenceId: ${vendaId}`)
+            }
+          } catch (err) {
+            console.error('Erro ao buscar venda por preferenceId:', err)
+          }
+        }
       }
       
       // Atualizar venda se existir

@@ -105,10 +105,13 @@ export async function POST(request: NextRequest) {
       try {
         const paymentData = await payment.get({ id: ultimoPaymentId })
         
-        // Verificar se o metadata corresponde
-        if (paymentData.metadata?.vendaId === vendaId) {
+        // Verificar se o metadata corresponde OU se o valor corresponde
+        const valorCorresponde = Math.abs((paymentData.transaction_amount || 0) - venda.total) < 0.01
+        const metadataCorresponde = paymentData.metadata?.vendaId === vendaId
+        
+        if (metadataCorresponde || valorCorresponde) {
           // Atualizar a venda com o paymentId encontrado
-          await prisma.venda.update({
+          const vendaAtualizada = await prisma.venda.update({
             where: { id: vendaId },
             data: {
               paymentId: paymentData.id?.toString() || null,
@@ -117,6 +120,8 @@ export async function POST(request: NextRequest) {
                               paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
             },
           })
+          
+          console.log(`✅ Venda ${vendaId} atualizada automaticamente! Payment ID: ${paymentData.id}`)
           
           return NextResponse.json({
             encontrado: true,
@@ -129,12 +134,7 @@ export async function POST(request: NextRequest) {
               transaction_amount: paymentData.transaction_amount,
               date_created: paymentData.date_created,
             },
-            venda: {
-              id: venda.id,
-              statusPagamento: paymentData.status === 'approved' ? 'approved' : 
-                              paymentData.status === 'rejected' ? 'rejected' : 
-                              paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
-            },
+            venda: vendaAtualizada,
           })
         }
       } catch (err) {
