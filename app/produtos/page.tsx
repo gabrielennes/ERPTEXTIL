@@ -288,68 +288,84 @@ export default function ProdutosPage() {
           </div>
         </div>
       ) : (
-        <div className={styles.productsGrid}>
-          {produtos.map((produto) => (
-            <div key={produto.id} className={styles.productCard}>
-              <div className={styles.productHeader}>
-                <h3 className={styles.productName}>{produto.nome}</h3>
-                <span className={styles.productPrice}>
-                  R$ {produto.precoVenda.toFixed(2)}
-                </span>
-              </div>
-              <div className={styles.productInfo}>
-                {produto.marca && (
-                  <div className={styles.infoItem}>
-                    <strong>Marca:</strong> {produto.marca}
-                  </div>
-                )}
-                {produto.categoria && (
-                  <div className={styles.infoItem}>
-                    <strong>Categoria:</strong> {produto.categoria}
-                  </div>
-                )}
-                <div className={styles.infoItem}>
-                  <strong>Variações:</strong> {produto.variacoes.length}
-                </div>
-                <div className={styles.infoItem}>
-                  <strong>Total em Estoque:</strong>{' '}
-                  {produto.variacoes.reduce((acc, v) => acc + v.estoque, 0)}
-                </div>
-                <div className={styles.infoItem}>
-                  <strong>Data de Cadastro:</strong>{' '}
-                  {new Date(produto.createdAt).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
-                </div>
-              </div>
-              <div className={styles.variacoesList}>
-                <strong>SKUs:</strong>
-                <div className={styles.skuTags}>
-                  {produto.variacoes.map((v) => (
-                    <span key={v.id} className={styles.skuTag}>
-                      {v.sku}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className={styles.actions}>
-                <button
-                  className={styles.viewButton}
-                  onClick={() => handleView(produto.id)}
-                >
-                  👁️ Visualizar
-                </button>
-                <button
-                  className={styles.editButton}
-                  onClick={() => handleOpenEdit(produto.id)}
-                >
-                  ✏️ Editar
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Categoria</th>
+                <th>Variações</th>
+                <th>Total em Estoque</th>
+                <th>SKUs</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {produtos.map((produto) => {
+                const totalEstoque = produto.variacoes.reduce(
+                  (acc, v) => acc + v.estoque,
+                  0
+                )
+                return (
+                  <tr key={produto.id}>
+                    <td>
+                      <div className={styles.productName}>{produto.nome}</div>
+                      {produto.marca && (
+                        <div className={styles.productBrand}>
+                          {produto.marca}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <span className={styles.productPrice}>
+                        R$ {produto.precoVenda.toFixed(2)}
+                      </span>
+                    </td>
+                    <td>{produto.categoria || '-'}</td>
+                    <td>{produto.variacoes.length}</td>
+                    <td>
+                      <span className={styles.stockValue}>
+                        {totalEstoque}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.skuTags}>
+                        {produto.variacoes.slice(0, 3).map((v) => (
+                          <span key={v.id} className={styles.skuTag}>
+                            {v.sku}
+                          </span>
+                        ))}
+                        {produto.variacoes.length > 3 && (
+                          <span className={styles.skuMore}>
+                            +{produto.variacoes.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          className={styles.viewButton}
+                          onClick={() => handleView(produto.id)}
+                          title="Visualizar"
+                        >
+                          👁️
+                        </button>
+                        <button
+                          className={styles.editButton}
+                          onClick={() => handleOpenEdit(produto.id)}
+                          title="Editar"
+                        >
+                          ✏️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 

@@ -51,16 +51,18 @@ export default function EstoquePage() {
     )
   )
 
-  const totalVariacoes = produtos.reduce(
+  // Calcular métricas baseadas nos produtos filtrados
+  const totalProdutos = produtosFiltrados.length
+  const totalVariacoes = produtosFiltrados.reduce(
     (acc, p) => acc + p.variacoes.length,
     0
   )
-  const totalEstoque = produtos.reduce(
+  const totalEstoque = produtosFiltrados.reduce(
     (acc, p) =>
       acc + p.variacoes.reduce((sum, v) => sum + v.estoque, 0),
     0
   )
-  const produtosComEstoqueBaixo = produtos.filter((p) =>
+  const produtosComEstoqueBaixo = produtosFiltrados.filter((p) =>
     p.variacoes.some((v) => v.estoque < 10)
   ).length
 
@@ -183,7 +185,7 @@ export default function EstoquePage() {
             <Cube3DIcon size={32} color="#3b82f6" />
           </div>
           <div className={styles.metricContent}>
-            <div className={styles.metricValue}>{produtos.length}</div>
+            <div className={styles.metricValue}>{totalProdutos}</div>
             <div className={styles.metricLabel}>Produtos</div>
           </div>
         </div>
