@@ -95,9 +95,9 @@ export default function Dashboard() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.welcomeBanner}>
-          <CompanyLogo size={60} className={styles.welcomeLogo} />
+          <CompanyLogo size={120} className={styles.welcomeLogo} />
           <div className={styles.welcomeContent}>
-            <h1 className={styles.welcomeTitle}>Voltrix</h1>
+            <h1 className={styles.welcomeTitle}>Enterprise Dev Solutions</h1>
             <p className={styles.welcomeSubtitle}>
               Sistema de gestão
             </p>

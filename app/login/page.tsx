@@ -96,8 +96,8 @@ export default function LoginPage() {
     <div className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.card}>
         <div className={styles.logo}>
-          <CompanyLogo size={64} className={styles.logoIcon} />
-          <h2 className={styles.title}>Voltrix</h2>
+          <CompanyLogo size={94} className={styles.logoIcon} />
+          <h2 className={styles.title}>Enterprise Dev Solutions</h2>
           <p className={styles.subtitle}>
             {isCadastro ? 'Crie sua conta' : 'Faça login para continuar'}
           </p>

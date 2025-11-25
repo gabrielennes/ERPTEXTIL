@@ -152,10 +152,9 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <CompanyLogo size={40} className={styles.logoIcon} />
+        <CompanyLogo size={60} className={styles.logoIcon} />
         <div className={styles.logoText}>
-          <div className={styles.logoTitle}>Voltrix</div>
-          <div className={styles.logoSubtitle}>Indústria Têxtil</div>
+          <div className={styles.logoTitle}>EDS</div>
         </div>
       </div>
 
