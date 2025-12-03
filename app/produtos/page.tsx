@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import ProductModal from '@/components/ProductModal'
 import ViewProductModal from '@/components/ViewProductModal'
-import { DownloadIcon } from '@/components/icons'
+import { DownloadIcon, EyeIcon, EditIcon, BoxIcon, PlusIcon } from '@/components/icons'
 import styles from './produtos.module.css'
 
 interface Variacao {
@@ -227,7 +227,12 @@ export default function ProdutosPage() {
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
-    document.body.removeChild(link)
+    setTimeout(() => {
+      if (link.parentNode) {
+        document.body.removeChild(link)
+      }
+      URL.revokeObjectURL(url)
+    }, 100)
   }
 
   const handleOpenEdit = async (produtoId: string) => {
@@ -259,14 +264,15 @@ export default function ProdutosPage() {
             onClick={handleExportCSV}
             disabled={produtos.length === 0}
           >
-            <DownloadIcon size={20} color="white" style={{ marginRight: '8px' }} />
+            <DownloadIcon size={18} color="white" />
             Exportar CSV
           </button>
           <button
             className={styles.addButton}
             onClick={() => setIsModalOpen(true)}
           >
-            + Adicionar Produto
+            <PlusIcon size={18} color="white" />
+            Adicionar Produto
           </button>
         </div>
       </div>
@@ -276,14 +282,18 @@ export default function ProdutosPage() {
       ) : produtos.length === 0 ? (
         <div className={styles.content}>
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>📦</div>
+            <div className={styles.emptyIcon}>
+              <BoxIcon size={64} color="#3b82f6" />
+            </div>
             <h2>Nenhum produto cadastrado</h2>
             <p>Comece cadastrando seu primeiro produto</p>
             <button
               className={styles.addButton}
               onClick={() => setIsModalOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              + Adicionar Produto
+              <PlusIcon size={18} color="white" />
+              Adicionar Produto
             </button>
           </div>
         </div>
@@ -350,14 +360,14 @@ export default function ProdutosPage() {
                           onClick={() => handleView(produto.id)}
                           title="Visualizar"
                         >
-                          👁️
+                          <EyeIcon size={18} color="currentColor" />
                         </button>
                         <button
                           className={styles.editButton}
                           onClick={() => handleOpenEdit(produto.id)}
                           title="Editar"
                         >
-                          ✏️
+                          <EditIcon size={18} color="currentColor" />
                         </button>
                       </div>
                     </td>

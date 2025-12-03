@@ -1,0 +1,448 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 48px;
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metricCard:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.metricCardIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  opacity: 0.08;
+  width: 64px;
+  height: 64px;
+  z-index: 0;
+}
+
+.metricCardContent {
+  position: relative;
+  z-index: 1;
+}
+
+.metricLabel {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metricTrendIcon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.metricValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 28px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 12px;
+}
+
+.produtoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.produtoNome {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.produtoDetalhes {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.chartContainer {
+  margin-top: 20px;
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 320px;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.barGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.barWrapper {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  width: 100%;
+  background: #1f2937;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.bar:hover {
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.barLabel {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.pagamentoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.pagamentoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.pagamentoItem:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pagamentoMetodo {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagamentoTotal {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 4px;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #111827;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.positionCell {
+  font-weight: 600;
+  color: #6b7280;
+  text-align: center;
+  width: 60px;
+}
+
+.produtoCell {
+  font-weight: 500;
+  color: #111827;
+}
+
+.skuCell {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 13px;
+  color: #374151;
+}
+
+.numberCell {
+  text-align: right;
+  font-weight: 500;
+}
+
+.abcResumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.abcItem {
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.abcLabel {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.abcValue {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.abcPercent {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.abcTotal {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.classBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.classBadge[data-class='A'] {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.classBadge[data-class='B'] {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.classBadge[data-class='C'] {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.periodoSelector {
+  display: flex;
+  gap: 8px;
+}
+
+.periodoButton,
+.activeButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+}
+
+.activeButton {
+  background: #1f2937;
+  color: white;
+  border-color: #111827;
+}
+
+.periodoButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.exportButton {
+  background: #1f2937;
+  color: white;
+  border: 1px solid #111827;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+}
+
+.exportButton:hover:not(:disabled) {
+  background: #111827;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exportButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .barChart {
+    height: 200px;
+  }
+  
+  .barLabel {
+    font-size: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .periodoSelector {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .periodoButton,
+  .activeButton {
+    flex: 1;
+    min-width: 80px;
+  }
+}
+

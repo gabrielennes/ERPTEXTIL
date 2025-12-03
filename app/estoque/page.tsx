@@ -151,7 +151,12 @@ export default function EstoquePage() {
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
-    document.body.removeChild(link)
+    setTimeout(() => {
+      if (link.parentNode) {
+        document.body.removeChild(link)
+      }
+      URL.revokeObjectURL(url)
+    }, 100)
   }
 
   if (loading) {
@@ -174,7 +179,7 @@ export default function EstoquePage() {
           onClick={handleExportCSV}
           disabled={produtosFiltrados.length === 0}
         >
-          <DownloadIcon size={20} color="white" style={{ marginRight: '8px' }} />
+          <DownloadIcon size={18} color="white" />
           Exportar CSV
         </button>
       </div>

@@ -195,7 +195,7 @@
 }
 
 .userSection {
-  padding: 16px 20px;
+  padding: 16px 12px;
   border-top: 1px solid #e5e7eb;
   margin-top: auto;
 }
@@ -204,7 +204,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .avatarCircle {
@@ -233,6 +233,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 2px;
 }
 
 .userRole {
@@ -246,33 +247,33 @@
 .userActions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .actionButton {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px;
   border: none;
-  background: #f3f4f6;
+  background: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: #6b7280;
   width: 100%;
   text-align: left;
 }
 
 .actionButton:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
   color: #1e40af;
 }
 
 .actionButton:active {
-  background: #d1d5db;
+  background: #e5e7eb;
 }
 
 .actionIcon {

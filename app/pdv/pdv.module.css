@@ -100,20 +100,27 @@
 }
 
 .leitorButton {
-  background: #2563eb;
-  border: none;
+  background: #1f2937;
+  border: 1px solid #111827;
   border-radius: 8px;
   color: #fff;
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   width: 100%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .leitorButton:hover {
-  background: #1d4ed8;
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.leitorButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .leitorInput {
@@ -146,12 +153,13 @@
 }
 
 .leitorInstrucoes {
-  background: #eff6ff;
+  background: #f9fafb;
   border-radius: 8px;
-  color: #1e40af;
+  color: #374151;
   padding: 16px;
-  font-size: 14px;
+  font-size: 13px;
   margin-top: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .leitorInstrucoes ul {
@@ -204,19 +212,21 @@
 
 .buscarButton {
   padding: 12px 24px;
-  background: #6b7280;
+  background: #1f2937;
   color: white;
-  border: none;
+  border: 1px solid #111827;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .buscarButton:hover:not(:disabled) {
-  background: #4b5563;
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .buscarButton:disabled {
@@ -269,60 +279,67 @@
 
 .viewButton {
   padding: 8px 16px;
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #374151;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .viewButton:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .addButton {
   padding: 8px 16px;
-  background: #10b981;
+  background: #059669;
   color: white;
-  border: none;
+  border: 1px solid #047857;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .addButton:hover {
-  background: #059669;
+  background: #047857;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .produtoBox {
-  background: #f0fdf4;
+  background: #f9fafb;
   padding: 16px;
   border-radius: 8px;
   margin-top: 16px;
-  border: 1px solid #bbf7d0;
+  border: 1px solid #e5e7eb;
 }
 
 .addCartButton {
   margin-top: 0;
   background: #059669;
   color: #fff;
-  border: none;
+  border: 1px solid #047857;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   padding: 8px 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   flex: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .addCartButton:hover {
   background: #047857;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .carrinhoTitulo {
@@ -411,17 +428,21 @@
 
 .removeItemButton {
   background: none;
-  border: none;
+  border: 1px solid #fee2e2;
   color: #dc2626;
   font-size: 18px;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .removeItemButton:hover {
   background: #fef2f2;
+  border-color: #fecaca;
 }
 
 .resumoPedido {
@@ -505,35 +526,50 @@
 .finalizarButton {
   width: 100%;
   padding: 14px;
-  background: #2563eb;
+  background: #059669;
   color: white;
-  border: none;
+  border: 1px solid #047857;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.finalizarButton:hover {
-  background: #1d4ed8;
+.finalizarButton:hover:not(:disabled) {
+  background: #047857;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.finalizarButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .limparButton {
   width: 100%;
   padding: 12px;
-  background: #f3f4f6;
+  background: white;
   color: #374151;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.limparButton:hover {
-  background: #e5e7eb;
+.limparButton:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.limparButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Scrollbar personalizada */

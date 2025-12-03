@@ -125,8 +125,29 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
+    const dataInicial = searchParams.get('dataInicial')
+    const dataFinal = searchParams.get('dataFinal')
+
+    // Construir filtro de data
+    const where: any = {}
+    if (dataInicial || dataFinal) {
+      where.createdAt = {}
+      if (dataInicial) {
+        // Início do dia (00:00:00)
+        const inicio = new Date(dataInicial)
+        inicio.setHours(0, 0, 0, 0)
+        where.createdAt.gte = inicio
+      }
+      if (dataFinal) {
+        // Fim do dia (23:59:59)
+        const fim = new Date(dataFinal)
+        fim.setHours(23, 59, 59, 999)
+        where.createdAt.lte = fim
+      }
+    }
 
     const vendas = await prisma.venda.findMany({
+      where,
       take: limit,
       skip: offset,
       include: {
@@ -142,7 +163,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const total = await prisma.venda.count()
+    const total = await prisma.venda.count({ where })
 
     return NextResponse.json({
       vendas,

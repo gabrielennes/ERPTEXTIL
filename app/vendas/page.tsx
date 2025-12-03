@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import styles from './vendas.module.css'
-import { ClockIcon } from '@/components/icons'
+import { ClockIcon, FilterIcon, XIcon, CheckIcon, RefreshIcon, TagIcon, DownloadIcon } from '@/components/icons'
 
 interface ItemVenda {
   id: string
@@ -36,12 +36,27 @@ export default function VendasPage() {
   const [vendas, setVendas] = useState<Venda[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [dataInicial, setDataInicial] = useState<string>('')
+  const [dataFinal, setDataFinal] = useState<string>('')
 
   const carregarVendas = async () => {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/vendas')
+      
+      // Construir query string com filtros de data
+      const params = new URLSearchParams()
+      if (dataInicial) {
+        params.append('dataInicial', dataInicial)
+      }
+      if (dataFinal) {
+        params.append('dataFinal', dataFinal)
+      }
+      
+      const queryString = params.toString()
+      const url = `/api/vendas${queryString ? `?${queryString}` : ''}`
+      
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
         setVendas(data.vendas || [])
@@ -59,6 +74,16 @@ export default function VendasPage() {
   useEffect(() => {
     carregarVendas()
   }, [])
+
+  // Recarregar vendas quando os filtros mudarem (opcional - pode remover se preferir filtrar apenas ao clicar no botão)
+  // useEffect(() => {
+  //   if (dataInicial || dataFinal) {
+  //     const timeoutId = setTimeout(() => {
+  //       carregarVendas()
+  //     }, 500)
+  //     return () => clearTimeout(timeoutId)
+  //   }
+  // }, [dataInicial, dataFinal])
 
   const formatarData = (data: string) => {
     const date = new Date(data)
@@ -234,6 +259,147 @@ export default function VendasPage() {
     )
   }
 
+  const limparFiltros = () => {
+    setDataInicial('')
+    setDataFinal('')
+  }
+
+  const handleExportCSV = () => {
+    if (vendas.length === 0) {
+      alert('Não há vendas para exportar')
+      return
+    }
+
+    const escapeCSV = (value: string | number | null): string => {
+      if (value === null || value === undefined) return '""'
+      const str = String(value)
+      const escaped = str.replace(/"/g, '""')
+      return `"${escaped}"`
+    }
+
+    const separator = ';'
+    const hoje = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')
+
+    // Cabeçalhos do CSV
+    const headers = [
+      'ID da Venda',
+      'Data/Hora',
+      'Status',
+      'Método de Pagamento',
+      'Subtotal',
+      'Desconto',
+      'Taxa',
+      'Total',
+      'Payment ID',
+      'Preference ID',
+      'Produto',
+      'SKU',
+      'Quantidade',
+      'Preço Unitário',
+      'Subtotal Item',
+    ]
+
+    // Criar linhas do CSV - uma linha por item de venda
+    const rows: string[][] = []
+
+    vendas.forEach((venda) => {
+      const dataFormatada = formatarData(venda.createdAt)
+      const status = venda.statusPagamento === 'approved' ? 'Aprovada' : 
+                     venda.statusPagamento === 'pending' ? 'Pendente' : 
+                     venda.statusPagamento === 'rejected' ? 'Rejeitada' : venda.statusPagamento
+
+      // Se a venda tem itens, criar uma linha para cada item
+      if (venda.itens && venda.itens.length > 0) {
+        venda.itens.forEach((item, index) => {
+          // Na primeira linha do item, incluir dados da venda
+          // Nas linhas subsequentes, deixar vazio para evitar duplicação
+          if (index === 0) {
+            rows.push([
+              venda.id.slice(-8).toUpperCase(),
+              dataFormatada,
+              status,
+              venda.metodoPagamento,
+              venda.subtotal.toString(),
+              venda.desconto.toString(),
+              venda.taxa.toString(),
+              venda.total.toString(),
+              venda.paymentId || '',
+              venda.preferenceId || '',
+              item.produto.nome,
+              item.variacao?.sku || '',
+              item.quantidade.toString(),
+              item.precoUnitario.toString(),
+              item.subtotal.toString(),
+            ])
+          } else {
+            // Linhas adicionais do mesmo pedido (outros itens)
+            rows.push([
+              '', // ID vazio para indicar que é continuação
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              item.produto.nome,
+              item.variacao?.sku || '',
+              item.quantidade.toString(),
+              item.precoUnitario.toString(),
+              item.subtotal.toString(),
+            ])
+          }
+        })
+      } else {
+        // Venda sem itens (não deveria acontecer, mas por segurança)
+        rows.push([
+          venda.id.slice(-8).toUpperCase(),
+          dataFormatada,
+          status,
+          venda.metodoPagamento,
+          venda.subtotal.toString(),
+          venda.desconto.toString(),
+          venda.taxa.toString(),
+          venda.total.toString(),
+          venda.paymentId || '',
+          venda.preferenceId || '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ])
+      }
+    })
+
+    // Converter para formato CSV
+    const csvContent = [
+      headers.map(escapeCSV).join(separator),
+      ...rows.map((row) => row.map(escapeCSV).join(separator)),
+    ].join('\n')
+
+    // Adicionar BOM para Excel reconhecer UTF-8
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
+
+    // Criar link de download
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `historico_vendas_${hoje}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    setTimeout(() => {
+      if (link.parentNode) {
+        document.body.removeChild(link)
+      }
+      URL.revokeObjectURL(url)
+    }, 100)
+  }
+
   return (
     <div className={styles.container}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -241,7 +407,44 @@ export default function VendasPage() {
           <h1 className={styles.title}>Histórico de Vendas</h1>
           <p className={styles.subtitle}>Todas as vendas realizadas</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={handleExportCSV}
+            disabled={vendas.length === 0}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: '#1f2937',
+              color: 'white',
+              border: '1px solid #111827',
+              borderRadius: '8px',
+              cursor: vendas.length === 0 ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+              opacity: vendas.length === 0 ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (vendas.length > 0) {
+                e.currentTarget.style.backgroundColor = '#111827'
+                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (vendas.length > 0) {
+                e.currentTarget.style.backgroundColor = '#1f2937'
+                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
+              }
+            }}
+            title="Exportar histórico de vendas para CSV"
+          >
+            <DownloadIcon size={18} color="white" />
+            Exportar CSV
+          </button>
           <button
             onClick={async () => {
               try {
@@ -264,34 +467,213 @@ export default function VendasPage() {
               }
             }}
             style={{
-              padding: '10px 20px',
-              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: '#059669',
               color: 'white',
-              border: 'none',
-              borderRadius: '6px',
+              border: '1px solid #047857',
+              borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: 500,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#047857'
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#059669'
+              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
             }}
             title="Atualizar status de todas as vendas pendentes"
           >
-            ✅ Atualizar Status
+            <CheckIcon size={18} color="white" />
+            Atualizar Status
           </button>
           <button
             onClick={carregarVendas}
             style={{
-              padding: '10px 20px',
-              backgroundColor: '#3b82f6',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: '#2563eb',
               color: 'white',
-              border: 'none',
-              borderRadius: '6px',
+              border: '1px solid #1d4ed8',
+              borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: 500,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1d4ed8'
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb'
+              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
             }}
           >
-            🔄 Recarregar
+            <RefreshIcon size={18} color="white" />
+            Recarregar
           </button>
+        </div>
+      </div>
+
+      {/* Filtro de Data */}
+      <div style={{
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        marginBottom: '24px',
+      }}>
+        <div style={{ 
+          fontSize: '16px', 
+          fontWeight: 600, 
+          marginBottom: '16px',
+          color: '#1f2937',
+          letterSpacing: '-0.01em',
+        }}>
+          Filtro de Data
+        </div>
+        <div style={{ 
+          display: 'flex', 
+          gap: '16px', 
+          alignItems: 'flex-end',
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <label style={{ 
+              display: 'block', 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              marginBottom: '8px',
+              color: '#374151',
+            }}>
+              Data Inicial
+            </label>
+            <input
+              type="date"
+              value={dataInicial}
+              onChange={(e) => setDataInicial(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+            />
+          </div>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <label style={{ 
+              display: 'block', 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              marginBottom: '8px',
+              color: '#374151',
+            }}>
+              Data Final
+            </label>
+            <input
+              type="date"
+              value={dataFinal}
+              onChange={(e) => setDataFinal(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={carregarVendas}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                backgroundColor: '#1f2937',
+                color: 'white',
+                border: '1px solid #374151',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#111827'
+                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1f2937'
+                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <FilterIcon size={18} color="white" />
+              Filtrar
+            </button>
+            {(dataInicial || dataFinal) && (
+              <button
+                onClick={() => {
+                  limparFiltros()
+                  setTimeout(carregarVendas, 100)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  backgroundColor: 'white',
+                  color: '#6b7280',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb'
+                  e.currentTarget.style.borderColor = '#9ca3af'
+                  e.currentTarget.style.color = '#374151'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white'
+                  e.currentTarget.style.borderColor = '#d1d5db'
+                  e.currentTarget.style.color = '#6b7280'
+                }}
+              >
+                <XIcon size={18} color="currentColor" />
+                Limpar Filtros
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -367,37 +749,54 @@ export default function VendasPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span
                         style={{
-                          padding: '4px 12px',
-                          borderRadius: '12px',
+                          padding: '6px 14px',
+                          borderRadius: '6px',
                           fontSize: '12px',
-                          fontWeight: 500,
-                          backgroundColor: `${status.color}20`,
+                          fontWeight: 600,
+                          backgroundColor: `${status.color}15`,
                           color: status.color,
+                          border: `1px solid ${status.color}30`,
+                          letterSpacing: '0.025em',
                         }}
                       >
                         {status.text}
                       </span>
                       {venda.statusPagamento === 'pending' && (
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           <button
                             onClick={() => atualizarStatusVenda(venda.id, venda.paymentId)}
                             style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              backgroundColor: '#3b82f6',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '8px 14px',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              backgroundColor: '#2563eb',
                               color: 'white',
-                              border: 'none',
+                              border: '1px solid #1d4ed8',
                               borderRadius: '6px',
                               cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#1d4ed8'
+                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb'
+                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
                             }}
                             title="Buscar e atualizar status do pagamento automaticamente"
                           >
-                            🔄 Atualizar
+                            <RefreshIcon size={16} color="white" />
+                            Atualizar
                           </button>
                           <button
                             onClick={async () => {
                               const paymentId = prompt(
-                                '📋 Cole o número da transação do comprovante do Mercado Pago:\n\n' +
+                                'Cole o número da transação do comprovante do Mercado Pago:\n\n' +
                                 'No comprovante, procure por "Número da transação"\n' +
                                 'Exemplo: 134150661619\n\n' +
                                 'Cole o número abaixo:'
@@ -407,32 +806,62 @@ export default function VendasPage() {
                               }
                             }}
                             style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              backgroundColor: '#8b5cf6',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '8px 14px',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              backgroundColor: '#7c3aed',
                               color: 'white',
-                              border: 'none',
+                              border: '1px solid #6d28d9',
                               borderRadius: '6px',
                               cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#6d28d9'
+                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#7c3aed'
+                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
                             }}
                             title="Atualizar usando o número da transação do comprovante"
                           >
-                            🔢 Usar Nº Transação
+                            <TagIcon size={16} color="white" />
+                            Usar Nº Transação
                           </button>
                           <button
                             onClick={() => marcarComoAprovada(venda.id)}
                             style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
-                              backgroundColor: '#10b981',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '8px 14px',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              backgroundColor: '#059669',
                               color: 'white',
-                              border: 'none',
+                              border: '1px solid #047857',
                               borderRadius: '6px',
                               cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#047857'
+                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#059669'
+                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
                             }}
                             title="Marcar como aprovada manualmente (para testes Sandbox)"
                           >
-                            ✅ Aprovar
+                            <CheckIcon size={16} color="white" />
+                            Aprovar
                           </button>
                         </div>
                       )}

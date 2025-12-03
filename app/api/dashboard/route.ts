@@ -95,6 +95,7 @@ export async function GET() {
       include: {
         itens: {
           include: {
+            produto: true,
             variacao: {
               include: {
                 produto: true,
@@ -129,11 +130,11 @@ export async function GET() {
       })),
       ultimasVendas: ultimasVendas.map((v) => ({
         id: v.id,
-        numero: v.numero,
+        numero: v.id.slice(-8).toUpperCase(),
         total: v.total,
         data: v.createdAt.toISOString(),
         produtos: v.itens.map((i) => ({
-          nome: i.produtoNome,
+          nome: i.produto.nome,
           quantidade: i.quantidade,
           precoUnitario: i.precoUnitario,
         })),

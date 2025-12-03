@@ -45,6 +45,9 @@
 .emptyIcon {
   font-size: 64px;
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .emptyState h2 {
@@ -61,19 +64,24 @@
 }
 
 .addButton {
-  background: #1e40af;
+  background: #1f2937;
   color: white;
-  border: none;
+  border: 1px solid #111827;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .addButton:hover {
-  background: #1e3a8a;
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tableContainer {
@@ -91,26 +99,34 @@
 
 .table thead {
   background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .table th {
-  padding: 12px 16px;
+  padding: 14px 16px;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .table td {
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 14px;
   color: #111827;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
 }
 
 .table tbody tr:hover {
   background: #f9fafb;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
 }
 
 .table tbody tr:last-child td {
@@ -121,46 +137,53 @@
   font-weight: 600;
   color: #111827;
   margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .productBrand {
   font-size: 12px;
   color: #6b7280;
+  font-weight: 400;
 }
 
 .productPrice {
-  font-size: 16px;
-  font-weight: 700;
-  color: #059669;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .stockValue {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   color: #111827;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
 }
 
 .skuTags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 
 .skuTag {
-  background: #eff6ff;
-  color: #1e40af;
-  padding: 4px 12px;
-  border-radius: 6px;
+  background: #f9fafb;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   display: inline-block;
+  border: 1px solid #e5e7eb;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  letter-spacing: 0.025em;
 }
 
 .skuMore {
   font-size: 12px;
   color: #6b7280;
   font-weight: 500;
+  font-style: italic;
 }
 
 .actions {
@@ -171,52 +194,63 @@
 
 .viewButton,
 .editButton {
-  padding: 6px 12px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 4px;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  min-width: 36px;
+  height: 36px;
 }
 
 .viewButton {
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #374151;
+  border: 1px solid #e5e7eb;
 }
 
 .viewButton:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .editButton {
-  background: #1e40af;
+  background: #1f2937;
   color: white;
+  border: 1px solid #111827;
 }
 
 .editButton:hover {
-  background: #1e3a8a;
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .exportButton {
-  background: #059669;
+  background: #1f2937;
   color: white;
-  border: none;
+  border: 1px solid #111827;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .exportButton:hover:not(:disabled) {
-  background: #047857;
+  background: #111827;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .exportButton:disabled {

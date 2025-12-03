@@ -11,6 +11,11 @@ import {
   ClockIcon,
   ClipboardIcon,
   BarChartIcon,
+  ReportIcon,
+  CalendarIcon,
+  PieChartIcon,
+  PlugIcon,
+  ShoppingBagIcon,
 } from '@/components/icons'
 import { CompanyLogo } from '@/components/Logo'
 import styles from './Sidebar.module.css'
@@ -72,6 +77,50 @@ const menuItems: MenuItem[] = [
         icon: <ClockIcon size={20} />,
         label: 'Histórico de Vendas',
         description: 'Vendas realizadas',
+      },
+    ],
+  },
+  {
+    icon: <ReportIcon size={24} />,
+    label: 'Gestão Empresarial',
+    description: 'Relatórios e análises',
+    subItems: [
+      {
+        href: '/relatorios/diario',
+        icon: <CalendarIcon size={20} />,
+        label: 'Relatório Diário',
+        description: 'Análise do dia',
+      },
+      {
+        href: '/relatorios/semanal',
+        icon: <BarChartIcon size={20} />,
+        label: 'Relatório Semanal',
+        description: 'Análise da semana',
+      },
+      {
+        href: '/relatorios/mensal',
+        icon: <TrendingUpIcon size={20} />,
+        label: 'Relatório Mensal',
+        description: 'Análise do mês',
+      },
+      {
+        href: '/relatorios/financeiro',
+        icon: <PieChartIcon size={20} />,
+        label: 'Relatório Financeiro',
+        description: 'Análise financeira',
+      },
+    ],
+  },
+  {
+    icon: <PlugIcon size={24} />,
+    label: 'Integrações',
+    description: 'Integrações com sistemas externos',
+    subItems: [
+      {
+        href: '/integracao/ecommerce',
+        icon: <ShoppingBagIcon size={20} />,
+        label: 'Integração Ecommerce',
+        description: 'Configurar integrações',
       },
     ],
   },

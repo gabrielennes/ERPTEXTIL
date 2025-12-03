@@ -4,6 +4,20 @@ import { BrowserMultiFormatReader } from '@zxing/library'
 import styles from './pdv.module.css'
 import ViewProductModal from '@/components/ViewProductModal'
 import MetricCard from '@/components/MetricCard'
+import {
+  TrendingUpIcon,
+  ShoppingCartIcon,
+  CameraIcon,
+  StopIcon,
+  SearchIcon,
+  EyeIcon,
+  PlusIcon,
+  TrashIcon,
+  DollarSignIcon,
+  CreditCardIcon,
+  SmartphoneIcon,
+  LightbulbIcon,
+} from '@/components/icons'
 
 interface ItemCarrinho {
   produto: any;
@@ -678,13 +692,13 @@ export default function PDVPage() {
           <MetricCard
             title="Vendas Hoje"
             value={`R$ ${vendasHoje.toFixed(2)}`}
-            icon={<span style={{ fontSize: '20px' }}>📈</span>}
+            icon={<TrendingUpIcon size={20} color="#10b981" />}
             iconColor="#10b981"
           />
           <MetricCard
             title="Itens no Carrinho"
             value={carrinho.reduce((acc, item) => acc + item.quantidade, 0).toString()}
-            icon={<span style={{ fontSize: '20px' }}>🛒</span>}
+            icon={<ShoppingCartIcon size={20} color="#3b82f6" />}
             iconColor="#3b82f6"
           />
         </div>
@@ -696,7 +710,7 @@ export default function PDVPage() {
           {/* Leitor de Etiquetas */}
           <div className={styles.leitorBox}>
             <h2 className={styles.leitorTitulo}>
-              <span>📷</span>
+              <CameraIcon size={20} color="#1f2937" />
               Leitor de Etiquetas
             </h2>
             <div className={styles.leitorCamera}>
@@ -709,7 +723,10 @@ export default function PDVPage() {
                   muted
                 />
               ) : (
-                <span style={{ fontSize: 64, color: '#9CA3AF', opacity: 0.6 }}>📷</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <CameraIcon size={48} color="#9CA3AF" />
+                  <span style={{ fontSize: 14, color: '#6b7280' }}>Câmera inativa</span>
+                </div>
               )}
             </div>
             {erroCamera && (
@@ -720,10 +737,20 @@ export default function PDVPage() {
             <button 
               className={styles.leitorButton} 
               onClick={leitorAtivo ? pararLeitura : iniciarLeitura}
-              style={{ margin: '16px 0' }}
+              style={{ margin: '16px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               disabled={loading}
             >
-              {leitorAtivo ? '⏹️ Parar Leitura' : '📷 Iniciar Leitura'}
+              {leitorAtivo ? (
+                <>
+                  <StopIcon size={18} color="white" />
+                  Parar Leitura
+                </>
+              ) : (
+                <>
+                  <CameraIcon size={18} color="white" />
+                  Iniciar Leitura
+                </>
+              )}
             </button>
             <p style={{ marginTop: 20, marginBottom: 8, fontSize: 14, color: '#6b7280' }}>
               Ou digite o código manualmente:
@@ -756,7 +783,7 @@ export default function PDVPage() {
           {/* Busca de Produtos */}
           <div className={styles.buscaBox}>
             <h2 className={styles.buscaTitulo}>
-              <span>🔍</span>
+              <SearchIcon size={20} color="#1f2937" />
               Buscar Produtos
             </h2>
             <div className={styles.buscaInputContainer}>
@@ -804,14 +831,18 @@ export default function PDVPage() {
                       <button
                         className={styles.viewButton}
                         onClick={() => visualizarProduto(prod)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
-                        👁️ Visualizar
+                        <EyeIcon size={16} color="currentColor" />
+                        Visualizar
                       </button>
                       <button
                         className={styles.addButton}
                         onClick={() => adicionarAoCarrinho(prod)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
-                        ➕ Adicionar
+                        <PlusIcon size={16} color="white" />
+                        Adicionar
                       </button>
                     </div>
                   </div>
@@ -845,14 +876,18 @@ export default function PDVPage() {
                   <button 
                     onClick={() => visualizarProduto(produto)} 
                     className={styles.viewButton}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
-                    👁️ Visualizar
+                    <EyeIcon size={16} color="currentColor" />
+                    Visualizar
                   </button>
                   <button 
                     onClick={() => adicionarAoCarrinho()} 
                     className={styles.addCartButton}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
-                    ➕ Adicionar ao Carrinho
+                    <PlusIcon size={16} color="white" />
+                    Adicionar ao Carrinho
                   </button>
                 </div>
               </div>
@@ -863,13 +898,13 @@ export default function PDVPage() {
         {/* Coluna direita - Carrinho de compras */}
         <div className={styles.rightPanel}>
           <h2 className={styles.carrinhoTitulo}>
-            <span>🛒</span>
+            <ShoppingCartIcon size={20} color="#1f2937" />
             Carrinho de Compras
           </h2>
           
           {carrinho.length === 0 ? (
             <div className={styles.carrinhoVazio}>
-              <span style={{ fontSize: 42 }}>🛒</span>
+              <ShoppingCartIcon size={48} color="#9ca3af" />
               <p>
                 Carrinho vazio<br/>
                 <span style={{ fontSize: 14 }}>Adicione produtos para começar</span>
@@ -912,8 +947,9 @@ export default function PDVPage() {
                           className={styles.removeItemButton}
                           onClick={() => removerItemCarrinho(item.produto.id)}
                           title="Remover"
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          🗑️
+                          <TrashIcon size={18} color="#dc2626" />
                         </button>
                       </div>
                     </div>
@@ -948,20 +984,26 @@ export default function PDVPage() {
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'dinheiro' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => setMetodoPagamento('dinheiro')}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
-                    💵 Dinheiro
+                    <DollarSignIcon size={18} color={metodoPagamento === 'dinheiro' ? 'white' : '#6b7280'} />
+                    Dinheiro
                   </button>
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'cartao' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => setMetodoPagamento('cartao')}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
-                    💳 Cartão
+                    <CreditCardIcon size={18} color={metodoPagamento === 'cartao' ? 'white' : '#6b7280'} />
+                    Cartão
                   </button>
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'pix' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => setMetodoPagamento('pix')}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
-                    📱 PIX
+                    <SmartphoneIcon size={18} color={metodoPagamento === 'pix' ? 'white' : '#6b7280'} />
+                    PIX
                   </button>
                 </div>
               </div>
@@ -1025,7 +1067,10 @@ export default function PDVPage() {
             overflow: 'auto',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>💳 Dados do Cartão</h2>
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CreditCardIcon size={20} color="#1f2937" />
+                Dados do Cartão
+              </h2>
               <button
                 onClick={() => {
                   setMostrarModalCartao(false)
@@ -1090,8 +1135,9 @@ export default function PDVPage() {
                   fontSize: 16,
                 }}
               />
-              <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                💡 Dica: Use "APRO" para pagamentos aprovados no teste
+              <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <LightbulbIcon size={14} color="#6b7280" />
+                Dica: Use "APRO" para pagamentos aprovados no teste
               </div>
             </div>
 
@@ -1175,11 +1221,17 @@ export default function PDVPage() {
                 backgroundColor: '#eff6ff',
                 borderRadius: '4px',
                 border: '1px solid #bfdbfe',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
               }}>
-                <strong>💳 Cartões de Teste:</strong><br/>
-                Mastercard: <code>5031 4332 1540 6351</code><br/>
-                Visa: <code>4509 9535 6623 3704</code><br/>
-                CVV: <code>123</code> | Nome: <code>APRO</code> (para aprovar)
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                  <CreditCardIcon size={14} color="#3b82f6" />
+                  Cartões de Teste:
+                </div>
+                <div>Mastercard: <code>5031 4332 1540 6351</code></div>
+                <div>Visa: <code>4509 9535 6623 3704</code></div>
+                <div>CVV: <code>123</code> | Nome: <code>APRO</code> (para aprovar)</div>
               </div>
             </div>
 

@@ -1,8 +1,8 @@
 .card {
   background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 28px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
   text-decoration: none;
   display: flex;
@@ -10,12 +10,13 @@
   align-items: center;
   text-align: center;
   gap: 16px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+  transform: translateY(-2px);
 }
 
 .icon {
@@ -40,12 +41,14 @@
 
 .title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .description {
   font-size: 14px;
   color: #6b7280;
+  font-weight: 400;
 }
 
