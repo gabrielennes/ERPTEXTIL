@@ -98,3 +98,75 @@ model ItensVenda {
   @@map("itens_venda")
 }
 
+model Cliente {
+  id          String   @id @default(cuid())
+  nome        String
+  cnpjCpf     String?
+  cep         String?
+  dataCadastro DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  contasAReceber ContasAReceber[]
+
+  @@map("clientes")
+}
+
+model Fornecedor {
+  id          String   @id @default(cuid())
+  nome        String
+  cnpj        String?
+  cep         String?
+  dataCadastro DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  contasAPagar ContasAPagar[]
+
+  @@map("fornecedores")
+}
+
+model ContasAPagar {
+  id              String      @id @default(cuid())
+  fornecedorId    String
+  fornecedor      Fornecedor  @relation(fields: [fornecedorId], references: [id], onDelete: Restrict)
+  cnpj            String?
+  valor           Float
+  parcelas        Int         @default(1)
+  valorTotal      Float
+  dataPagamento   DateTime
+  tipoTransacao   String      // PIX, TED, DOC, Cartão de Crédito, Boleto
+  chavePix        String?     // Para PIX
+  contaBancaria   String?     // Para TED/DOC
+  codigoBarras    String?     // Para Boleto
+  pdfUrl          String?     // URL do PDF anexado
+  pdfNome         String?     // Nome original do arquivo PDF
+  baixada         Boolean     @default(false) // Indica se a conta foi dada baixa
+  dataBaixa       DateTime?   // Data em que a conta foi dada baixa
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("contas_a_pagar")
+}
+
+model ContasAReceber {
+  id              String      @id @default(cuid())
+  clienteId       String
+  cliente         Cliente     @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  cnpjCpf         String?
+  valor           Float
+  parcelas        Int         @default(1)
+  valorTotal      Float
+  dataRecebimento DateTime
+  tipoTransacao   String      // PIX, TED, DOC, Cartão de Crédito, Boleto
+  chavePix        String?     // Para PIX
+  contaBancaria   String?     // Para TED/DOC
+  codigoBarras    String?     // Para Boleto
+  pdfUrl          String?     // URL do PDF anexado
+  pdfNome         String?     // Nome original do arquivo PDF
+  baixada         Boolean     @default(false) // Indica se a conta foi dada baixa
+  dataBaixa       DateTime?   // Data em que a conta foi dada baixa
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("contas_a_receber")
+}
+

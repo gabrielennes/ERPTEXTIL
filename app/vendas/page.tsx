@@ -101,8 +101,8 @@ export default function VendasPage() {
 
   const formatarNumeroPedido = (numero: string | null | undefined) => {
     if (!numero) return null
-    // Remove "PDV" ou "PDV-" do início do número se existir
-    return numero.replace(/^PDV-?/i, '')
+    // Retorna o número como está (já vem no formato #XXXXX)
+    return numero
   }
 
   const getStatusBadge = (status: string) => {

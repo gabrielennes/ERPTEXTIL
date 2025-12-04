@@ -150,7 +150,7 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
                   color: '#111827',
                 }}
               >
-                {venda.numero ? venda.numero.replace(/^PDV-?/i, '') : venda.id}
+                {venda.numero || `#${venda.id.slice(-8).toUpperCase()}`}
               </td>
               <td
                 style={{

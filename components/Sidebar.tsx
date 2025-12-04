@@ -16,6 +16,10 @@ import {
   PieChartIcon,
   PlugIcon,
   ShoppingBagIcon,
+  FileTextIcon,
+  UserIcon,
+  TruckIcon,
+  CreditCardIcon,
 } from '@/components/icons'
 import { CompanyLogo } from '@/components/Logo'
 import styles from './Sidebar.module.css'
@@ -121,6 +125,50 @@ const menuItems: MenuItem[] = [
         icon: <ShoppingBagIcon size={20} />,
         label: 'Integração Ecommerce',
         description: 'Configurar integrações',
+      },
+    ],
+  },
+  {
+    icon: <FileTextIcon size={24} />,
+    label: 'Cadastro',
+    description: 'Cadastros gerais',
+    subItems: [
+      {
+        href: '/cadastro/cliente',
+        icon: <UserIcon size={20} />,
+        label: 'Cadastro de Cliente',
+        description: 'Gerenciar clientes',
+      },
+      {
+        href: '/cadastro/fornecedor',
+        icon: <TruckIcon size={20} />,
+        label: 'Cadastro de Fornecedor',
+        description: 'Gerenciar fornecedores',
+      },
+    ],
+  },
+  {
+    icon: <CreditCardIcon size={24} />,
+    label: 'Financeiro',
+    description: 'Gestão financeira',
+    subItems: [
+      {
+        href: '/financeiro/contas-a-pagar',
+        icon: <DollarSignIcon size={20} />,
+        label: 'Contas a Pagar',
+        description: 'Gerenciar contas a pagar',
+      },
+      {
+        href: '/financeiro/contas-a-receber',
+        icon: <TrendingUpIcon size={20} />,
+        label: 'Contas a Receber',
+        description: 'Gerenciar contas a receber',
+      },
+      {
+        href: '/financeiro/extrato-movimentacao',
+        icon: <FileTextIcon size={20} />,
+        label: 'Extrato de Movimentação Financeira',
+        description: 'Extrato de pagamentos e recebimentos',
       },
     ],
   },
