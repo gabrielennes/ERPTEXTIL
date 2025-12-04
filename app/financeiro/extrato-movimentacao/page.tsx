@@ -10,9 +10,10 @@ interface Movimentacao {
   descricao: string
   valor: number
   data: string
-  fornecedor?: string
-  cliente?: string
-  tipoTransacao: string
+  fornecedor?: string | null
+  cliente?: string | null
+  setor?: string | null
+  categoriaFinanceira: string
 }
 
 export default function ExtratoMovimentacaoPage() {
@@ -132,8 +133,9 @@ export default function ExtratoMovimentacaoPage() {
       'Data',
       'Tipo',
       'Descrição',
+      'Setor',
       'Fornecedor/Cliente',
-      'Tipo de Transação',
+      'Categoria Financeira',
       'Valor',
     ]
 
@@ -141,8 +143,9 @@ export default function ExtratoMovimentacaoPage() {
       formatDate(mov.data),
       mov.tipo === 'pagamento' ? 'Pagamento' : 'Recebimento',
       mov.descricao,
+      mov.setor || '-',
       mov.fornecedor || mov.cliente || '-',
-      mov.tipoTransacao,
+      mov.categoriaFinanceira,
       mov.valor.toString(),
     ])
 
@@ -284,8 +287,9 @@ export default function ExtratoMovimentacaoPage() {
                   <th>Data</th>
                   <th>Tipo</th>
                   <th>Descrição</th>
+                  <th>Setor</th>
                   <th>Fornecedor/Cliente</th>
-                  <th>Tipo de Transação</th>
+                  <th>Categoria Financeira</th>
                   <th>Valor</th>
                 </tr>
               </thead>
@@ -305,8 +309,9 @@ export default function ExtratoMovimentacaoPage() {
                       </span>
                     </td>
                     <td className={styles.descricaoCell}>{mov.descricao}</td>
+                    <td className={styles.nomeCell}>{mov.setor || '-'}</td>
                     <td className={styles.nomeCell}>{mov.fornecedor || mov.cliente || '-'}</td>
-                    <td className={styles.tipoCell}>{mov.tipoTransacao}</td>
+                    <td className={styles.tipoCell}>{mov.categoriaFinanceira}</td>
                     <td
                       className={styles.valorCell}
                       style={{ color: mov.tipo === 'pagamento' ? '#dc2626' : '#059669' }}

@@ -19,7 +19,7 @@ interface ContaAReceber {
   valor: number
   parcelas: number
   valorTotal: number
-  dataRecebimento: string
+  dataVencimento: string
   tipoTransacao: string
   chavePix: string | null
   contaBancaria: string | null
@@ -39,9 +39,9 @@ export default function ContasAReceberPage() {
   const [filtros, setFiltros] = useState({
     clienteId: '',
     cnpjCpf: '',
-    dataRecebimentoInicial: '',
-    dataRecebimentoFinal: '',
-    tipoTransacao: '',
+    dataVencimentoInicial: '',
+    dataVencimentoFinal: '',
+    categoriaFinanceira: '',
   })
   const [formData, setFormData] = useState({
     clienteId: '',
@@ -49,8 +49,9 @@ export default function ContasAReceberPage() {
     valor: '',
     parcelas: '1',
     valorTotal: '',
-    dataRecebimento: '',
-    tipoTransacao: '',
+    dataVencimento: '',
+    categoriaFinanceira: '',
+    categoriaFinanceiraOutros: '', // Campo para quando "Outros" for selecionado
     chavePix: '',
     contaBancaria: '',
     codigoBarras: '',
@@ -122,11 +123,15 @@ export default function ContasAReceberPage() {
         newData.valorTotal = (valor * parcelas).toFixed(2)
       }
 
-      // Limpar campos condicionais quando tipo de transação mudar
-      if (field === 'tipoTransacao') {
+      // Limpar campos condicionais quando categoria financeira mudar
+      if (field === 'categoriaFinanceira') {
         newData.chavePix = ''
         newData.contaBancaria = ''
         newData.codigoBarras = ''
+        // Limpar campo "Outros" se não for "Outros"
+        if (value !== 'Outros') {
+          newData.categoriaFinanceiraOutros = ''
+        }
       }
 
       // Preencher CNPJ/CPF quando cliente for selecionado
@@ -201,6 +206,18 @@ export default function ContasAReceberPage() {
     setLoading(true)
     setMessage(null)
 
+    // Se "Outros" foi selecionado, usar o valor customizado
+    const categoriaFinal = formData.categoriaFinanceira === 'Outros' 
+      ? formData.categoriaFinanceiraOutros 
+      : formData.categoriaFinanceira
+
+    if (!categoriaFinal) {
+      setMessage({ type: 'error', text: 'Por favor, selecione ou especifique uma categoria financeira' })
+      setLoading(false)
+      setTimeout(() => setMessage(null), 5000)
+      return
+    }
+
     try {
       const response = await fetch('/api/financeiro/contas-a-receber', {
         method: 'POST',
@@ -209,6 +226,7 @@ export default function ContasAReceberPage() {
         },
         body: JSON.stringify({
           ...formData,
+          categoriaFinanceira: categoriaFinal, // Enviar a categoria final (customizada se "Outros")
           pdfFile: undefined, // Não enviar o arquivo, apenas a URL
         }),
       })
@@ -240,8 +258,9 @@ export default function ContasAReceberPage() {
       valor: '',
       parcelas: '1',
       valorTotal: '',
-      dataRecebimento: '',
-      tipoTransacao: '',
+      dataVencimento: '',
+      categoriaFinanceira: '',
+      categoriaFinanceiraOutros: '',
       chavePix: '',
       contaBancaria: '',
       codigoBarras: '',
@@ -279,21 +298,21 @@ export default function ContasAReceberPage() {
         }
       }
 
-      // Filtro por data de recebimento (range)
-      if (filtros.dataRecebimentoInicial || filtros.dataRecebimentoFinal) {
-        const dataConta = new Date(conta.dataRecebimento)
+      // Filtro por Data de Vencimento (range)
+      if (filtros.dataVencimentoInicial || filtros.dataVencimentoFinal) {
+        const dataConta = new Date(conta.dataVencimento)
         dataConta.setHours(0, 0, 0, 0)
         
-        if (filtros.dataRecebimentoInicial) {
-          const dataInicial = new Date(filtros.dataRecebimentoInicial)
+        if (filtros.dataVencimentoInicial) {
+          const dataInicial = new Date(filtros.dataVencimentoInicial)
           dataInicial.setHours(0, 0, 0, 0)
           if (dataConta < dataInicial) {
             return false
           }
         }
         
-        if (filtros.dataRecebimentoFinal) {
-          const dataFinal = new Date(filtros.dataRecebimentoFinal)
+        if (filtros.dataVencimentoFinal) {
+          const dataFinal = new Date(filtros.dataVencimentoFinal)
           dataFinal.setHours(23, 59, 59, 999)
           if (dataConta > dataFinal) {
             return false
@@ -301,8 +320,8 @@ export default function ContasAReceberPage() {
         }
       }
 
-      // Filtro por tipo de transação
-      if (filtros.tipoTransacao && conta.tipoTransacao !== filtros.tipoTransacao) {
+      // Filtro por categoria financeira
+      if (filtros.categoriaFinanceira && conta.tipoTransacao !== filtros.categoriaFinanceira) {
         return false
       }
 
@@ -359,8 +378,8 @@ export default function ContasAReceberPage() {
       'Valor',
       'Parcelas',
       'Valor Total',
-      'Data de Recebimento',
-      'Tipo de Transação',
+      'Data de Vencimento',
+      'Categoria Financeira',
       'Chave PIX',
       'Conta Bancária',
       'Código de Barras',
@@ -373,7 +392,7 @@ export default function ContasAReceberPage() {
       conta.valor.toString(),
       conta.parcelas.toString(),
       conta.valorTotal.toString(),
-      formatDate(conta.dataRecebimento),
+      formatDate(conta.dataVencimento),
       conta.tipoTransacao,
       conta.chavePix || '',
       conta.contaBancaria || '',
@@ -427,9 +446,9 @@ export default function ContasAReceberPage() {
     const totalContasAReceber = contasFiltradas.reduce((acc, conta) => acc + conta.valorTotal, 0)
     
     const contasAtrasadas = contasFiltradas.filter((conta) => {
-      const dataRecebimento = new Date(conta.dataRecebimento)
-      dataRecebimento.setHours(0, 0, 0, 0)
-      return dataRecebimento < hoje
+      const dataVencimento = new Date(conta.dataVencimento)
+      dataVencimento.setHours(0, 0, 0, 0)
+      return dataVencimento < hoje
     })
     
     const totalContasAtrasadas = contasAtrasadas.reduce((acc, conta) => acc + conta.valorTotal, 0)
@@ -448,13 +467,13 @@ export default function ContasAReceberPage() {
     setFiltros({
       clienteId: '',
       cnpjCpf: '',
-      dataRecebimentoInicial: '',
-      dataRecebimentoFinal: '',
-      tipoTransacao: '',
+      dataVencimentoInicial: '',
+      dataVencimentoFinal: '',
+      categoriaFinanceira: '',
     })
   }
 
-  const temFiltrosAtivos = filtros.clienteId || filtros.cnpjCpf || filtros.dataRecebimentoInicial || filtros.dataRecebimentoFinal || filtros.tipoTransacao
+  const temFiltrosAtivos = filtros.clienteId || filtros.cnpjCpf || filtros.dataVencimentoInicial || filtros.dataVencimentoFinal || filtros.categoriaFinanceira
 
   return (
     <div className={styles.container}>
@@ -564,38 +583,40 @@ export default function ContasAReceberPage() {
             </div>
 
             <div className={styles.filterGroup}>
-              <label className={styles.filterLabel}>Data de Recebimento (Inicial)</label>
+              <label className={styles.filterLabel}>Data de Vencimento (Inicial)</label>
               <input
                 type="date"
                 className={styles.filterInput}
-                value={filtros.dataRecebimentoInicial}
-                onChange={(e) => setFiltros((prev) => ({ ...prev, dataRecebimentoInicial: e.target.value }))}
+                value={filtros.dataVencimentoInicial}
+                onChange={(e) => setFiltros((prev) => ({ ...prev, dataVencimentoInicial: e.target.value }))}
               />
             </div>
 
             <div className={styles.filterGroup}>
-              <label className={styles.filterLabel}>Data de Recebimento (Final)</label>
+              <label className={styles.filterLabel}>Data de Vencimento (Final)</label>
               <input
                 type="date"
                 className={styles.filterInput}
-                value={filtros.dataRecebimentoFinal}
-                onChange={(e) => setFiltros((prev) => ({ ...prev, dataRecebimentoFinal: e.target.value }))}
+                value={filtros.dataVencimentoFinal}
+                onChange={(e) => setFiltros((prev) => ({ ...prev, dataVencimentoFinal: e.target.value }))}
               />
             </div>
 
             <div className={styles.filterGroup}>
-              <label className={styles.filterLabel}>Tipo de Transação</label>
+              <label className={styles.filterLabel}>Categoria Financeira</label>
               <select
                 className={styles.filterInput}
-                value={filtros.tipoTransacao}
-                onChange={(e) => setFiltros((prev) => ({ ...prev, tipoTransacao: e.target.value }))}
+                value={filtros.categoriaFinanceira}
+                onChange={(e) => setFiltros((prev) => ({ ...prev, categoriaFinanceira: e.target.value }))}
               >
-                <option value="">Todos</option>
-                <option value="PIX">PIX</option>
-                <option value="TED">TED</option>
-                <option value="DOC">DOC</option>
-                <option value="Cartão de Crédito">Cartão de Crédito</option>
-                <option value="Boleto">Boleto</option>
+                <option value="">Todas</option>
+                <option value="Venda Atacado">Venda Atacado</option>
+                <option value="Venda Varejo">Venda Varejo</option>
+                <option value="Venda E-commerce">Venda E-commerce</option>
+                <option value="Revenda Sem Nota">Revenda Sem Nota</option>
+                <option value="Devolução Estornada">Devolução Estornada</option>
+                <option value="Venda Consignada">Venda Consignada</option>
+                <option value="Outros">Outros</option>
               </select>
             </div>
           </div>
@@ -617,8 +638,8 @@ export default function ContasAReceberPage() {
                   <th>Valor</th>
                   <th>Parcelas</th>
                   <th>Valor Total</th>
-                  <th>Data de Recebimento</th>
-                  <th>Tipo de Transação</th>
+                  <th>Data de Vencimento</th>
+                  <th>Categoria Financeira</th>
                   <th>Detalhes</th>
                   <th>Ações</th>
                 </tr>
@@ -633,20 +654,17 @@ export default function ContasAReceberPage() {
                     <td className={styles.valorCell}>{formatCurrency(conta.valor)}</td>
                     <td className={styles.parcelasCell}>{conta.parcelas}</td>
                     <td className={styles.valorTotalCell}>{formatCurrency(conta.valorTotal)}</td>
-                    <td className={styles.dataCell}>{formatDate(conta.dataRecebimento)}</td>
+                    <td className={styles.dataCell}>{formatDate(conta.dataVencimento)}</td>
                     <td className={styles.tipoCell}>{conta.tipoTransacao}</td>
                     <td className={styles.detalhesCell}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {conta.tipoTransacao === 'PIX' && conta.chavePix && (
+                        {conta.chavePix && (
                           <span>PIX: {conta.chavePix}</span>
                         )}
-                        {(conta.tipoTransacao === 'TED' || conta.tipoTransacao === 'DOC') && conta.contaBancaria && (
+                        {conta.contaBancaria && (
                           <span>Conta: {conta.contaBancaria}</span>
                         )}
-                        {conta.tipoTransacao === 'Cartão de Crédito' && (
-                          <span>CC</span>
-                        )}
-                        {conta.tipoTransacao === 'Boleto' && conta.codigoBarras && (
+                        {conta.codigoBarras && (
                           <span>Código: {conta.codigoBarras}</span>
                         )}
                         {conta.pdfUrl && (
@@ -770,80 +788,55 @@ export default function ContasAReceberPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Data de Recebimento *</label>
+                  <label className={styles.label}>Data de Vencimento *</label>
                   <input
                     type="date"
                     className={styles.input}
-                    value={formData.dataRecebimento}
-                    onChange={(e) => handleChange('dataRecebimento', e.target.value)}
+                    value={formData.dataVencimento}
+                    onChange={(e) => handleChange('dataVencimento', e.target.value)}
                     required
                     disabled={loading}
                   />
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Tipo de Transação *</label>
+                <div className={styles.formGroup} style={formData.categoriaFinanceira === 'Outros' ? { gridColumn: 'span 1' } : {}}>
+                  <label className={styles.label}>Categoria Financeira *</label>
                   <select
                     className={styles.input}
-                    value={formData.tipoTransacao}
-                    onChange={(e) => handleChange('tipoTransacao', e.target.value)}
+                    value={formData.categoriaFinanceira}
+                    onChange={(e) => handleChange('categoriaFinanceira', e.target.value)}
                     required
                     disabled={loading}
                   >
-                    <option value="">Selecione o tipo</option>
-                    <option value="PIX">PIX</option>
-                    <option value="TED">TED</option>
-                    <option value="DOC">DOC</option>
-                    <option value="Cartão de Crédito">Cartão de Crédito</option>
-                    <option value="Boleto">Boleto</option>
+                    <option value="">Selecione a categoria</option>
+                    <option value="Venda Atacado">Venda Atacado</option>
+                    <option value="Venda Varejo">Venda Varejo</option>
+                    <option value="Venda E-commerce">Venda E-commerce</option>
+                    <option value="Revenda Sem Nota">Revenda Sem Nota</option>
+                    <option value="Devolução Estornada">Devolução Estornada</option>
+                    <option value="Venda Consignada">Venda Consignada</option>
+                    <option value="Outros">Outros</option>
                   </select>
                 </div>
 
-                {/* Campos condicionais */}
-                {formData.tipoTransacao === 'PIX' && (
+                {formData.categoriaFinanceira === 'Outros' && (
                   <div className={styles.formGroup}>
-                    <label className={styles.label}>Chave PIX *</label>
+                    <label className={styles.label}>Especifique a categoria *</label>
                     <input
                       type="text"
                       className={styles.input}
-                      placeholder="Digite a chave PIX"
-                      value={formData.chavePix}
-                      onChange={(e) => handleChange('chavePix', e.target.value)}
-                      required
+                      placeholder="Digite a categoria financeira"
+                      value={formData.categoriaFinanceiraOutros}
+                      onChange={(e) => handleChange('categoriaFinanceiraOutros', e.target.value)}
+                      required={formData.categoriaFinanceira === 'Outros'}
                       disabled={loading}
                     />
                   </div>
                 )}
 
-                {(formData.tipoTransacao === 'TED' || formData.tipoTransacao === 'DOC') && (
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Conta Bancária *</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      placeholder="Digite a conta bancária"
-                      value={formData.contaBancaria}
-                      onChange={(e) => handleChange('contaBancaria', e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                )}
 
-                {formData.tipoTransacao === 'Boleto' && (
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Código de Barras *</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      placeholder="Digite o código de barras"
-                      value={formData.codigoBarras}
-                      onChange={(e) => handleChange('codigoBarras', e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                )}
+
+
 
                 {/* Campo de Upload de PDF */}
                 <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>

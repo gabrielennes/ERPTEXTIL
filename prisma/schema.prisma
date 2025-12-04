@@ -155,7 +155,7 @@ model ContasAReceber {
   valor           Float
   parcelas        Int         @default(1)
   valorTotal      Float
-  dataRecebimento DateTime
+  dataVencimento  DateTime
   tipoTransacao   String      // PIX, TED, DOC, Cartão de Crédito, Boleto
   chavePix        String?     // Para PIX
   contaBancaria   String?     // Para TED/DOC
