@@ -8,6 +8,11 @@ const client = new MercadoPagoConfig({
 
 const payment = new Payment(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -28,6 +33,7 @@ export async function POST(request: NextRequest) {
       
       // Buscar informações do pagamento
       const paymentData = await payment.get({ id: paymentId })
+      const parcelasPagamento = getParcelasFromPayment(paymentData)
       
       console.log('📊 Dados do pagamento:', {
         id: paymentData.id,
@@ -87,6 +93,7 @@ export async function POST(request: NextRequest) {
                              paymentData.status === 'rejected' ? 'rejected' : 
                              paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
               paymentId: paymentId.toString(),
+              ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
             },
           })
           console.log(`✅ Venda ${vendaId} atualizada automaticamente via webhook!`)
@@ -105,12 +112,13 @@ export async function POST(request: NextRequest) {
           // Se o campo statusPagamento não existir, tentar sem ele
           if (updateError.message && updateError.message.includes('statusPagamento')) {
             try {
-              await prisma.venda.update({
-                where: { id: vendaId },
-                data: {
-                  paymentId: paymentId.toString(),
-                },
-              })
+            await prisma.venda.update({
+              where: { id: vendaId },
+              data: {
+                paymentId: paymentId.toString(),
+                ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
+              },
+            })
               console.log(`✅ Venda ${vendaId} atualizada (sem status)`)
             } catch (err) {
               console.error('❌ Erro ao atualizar venda (sem status):', err)
@@ -151,15 +159,16 @@ export async function POST(request: NextRequest) {
             const vendaEncontrada = vendasPendentes[0]
             console.log(`🔍 Venda encontrada por valor e data: ${vendaEncontrada.id}`)
             
-            await prisma.venda.update({
-              where: { id: vendaEncontrada.id },
-              data: {
-                statusPagamento: paymentData.status === 'approved' ? 'approved' : 
-                               paymentData.status === 'rejected' ? 'rejected' : 
-                               paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
-                paymentId: paymentId.toString(),
-              },
-            })
+          await prisma.venda.update({
+            where: { id: vendaEncontrada.id },
+            data: {
+              statusPagamento: paymentData.status === 'approved' ? 'approved' : 
+                             paymentData.status === 'rejected' ? 'rejected' : 
+                             paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+              paymentId: paymentId.toString(),
+              ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
+            },
+          })
             
             console.log(`✅ Venda ${vendaEncontrada.id} atualizada automaticamente!`)
             

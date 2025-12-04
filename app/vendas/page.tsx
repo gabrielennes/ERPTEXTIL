@@ -20,14 +20,17 @@ interface ItemVenda {
 
 interface Venda {
   id: string
+  numero?: string | null
   total: number
   subtotal: number
   desconto: number
   taxa: number
   metodoPagamento: string
+  parcelas: number
   statusPagamento: string
   paymentId: string | null
   preferenceId: string | null
+  dataVenda: string
   createdAt: string
   itens: ItemVenda[]
 }
@@ -94,6 +97,12 @@ export default function VendasPage() {
       hour: '2-digit',
       minute: '2-digit',
     })
+  }
+
+  const formatarNumeroPedido = (numero: string | null | undefined) => {
+    if (!numero) return null
+    // Remove "PDV" ou "PDV-" do início do número se existir
+    return numero.replace(/^PDV-?/i, '')
   }
 
   const getStatusBadge = (status: string) => {
@@ -743,7 +752,7 @@ export default function VendasPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                       <span style={{ fontSize: '20px' }}>{getMetodoPagamentoIcon(venda.metodoPagamento)}</span>
                       <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>
-                        Venda #{venda.id.slice(-8).toUpperCase()}
+                        {venda.numero ? `Venda ${formatarNumeroPedido(venda.numero)}` : `Venda #${venda.id.slice(-8).toUpperCase()}`}
                       </h3>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -866,8 +875,11 @@ export default function VendasPage() {
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                      {formatarData(venda.createdAt)}
+                    <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                      <div>Data da Venda: {formatarData(venda.dataVenda)}</div>
+                      <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>
+                        Criado em: {formatarData(venda.createdAt)}
+                      </div>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -876,6 +888,7 @@ export default function VendasPage() {
                     </div>
                     <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
                       {venda.metodoPagamento}
+                      {venda.parcelas > 1 ? ` • ${venda.parcelas}x` : ''}
                     </div>
                   </div>
                 </div>

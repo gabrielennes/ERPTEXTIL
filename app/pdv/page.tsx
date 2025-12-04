@@ -40,6 +40,7 @@ export default function PDVPage() {
   const [leitorAtivo, setLeitorAtivo] = useState(false)
   const [erroCamera, setErroCamera] = useState('')
   const [metodoPagamento, setMetodoPagamento] = useState<MetodoPagamento>('dinheiro')
+  const [parcelas, setParcelas] = useState(1)
   const [processandoPagamento, setProcessandoPagamento] = useState(false)
   const [mostrarModalCartao, setMostrarModalCartao] = useState(false)
   const [dadosCartao, setDadosCartao] = useState({
@@ -215,6 +216,15 @@ export default function PDVPage() {
       }
     }
   }, [])
+
+  const parcelasDisponiveis = Array.from({ length: 12 }, (_, i) => i + 1)
+
+  const handleMetodoPagamento = (metodo: MetodoPagamento) => {
+    setMetodoPagamento(metodo)
+    if (metodo !== 'cartao') {
+      setParcelas(1)
+    }
+  }
 
   // Calcular vendas de hoje (mock - pode ser substituído por API real)
   const vendasHoje = carrinho.reduce((acc, item) => (
@@ -468,6 +478,7 @@ export default function PDVPage() {
             total,
             metodoPagamento: metodoPagamento, // 'pix' ou 'cartao' (ambos usam Checkout Pro)
             statusPagamento: 'pending',
+            parcelas: 1,
           }),
         })
 
@@ -495,6 +506,7 @@ export default function PDVPage() {
             metadata: {
               vendaId: venda.id,
               userId: 'current-user', // Você pode pegar do session depois
+              parcelas: 1,
             },
           }),
         })
@@ -549,6 +561,7 @@ export default function PDVPage() {
             total,
             metodoPagamento: 'dinheiro',
             statusPagamento: 'approved',
+            parcelas: 1,
           }),
         })
 
@@ -603,6 +616,7 @@ export default function PDVPage() {
           total,
           metodoPagamento: 'cartao',
           statusPagamento: 'pending',
+          parcelas,
         }),
       })
 
@@ -631,6 +645,7 @@ export default function PDVPage() {
           metadata: {
             vendaId: venda.id,
             userId: 'current-user',
+            parcelas,
           },
         }),
       })
@@ -983,7 +998,7 @@ export default function PDVPage() {
                 <div className={styles.pagamentoButtons}>
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'dinheiro' ? styles.pagamentoButtonActive : ''}`}
-                    onClick={() => setMetodoPagamento('dinheiro')}
+                    onClick={() => handleMetodoPagamento('dinheiro')}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <DollarSignIcon size={18} color={metodoPagamento === 'dinheiro' ? 'white' : '#6b7280'} />
@@ -991,7 +1006,7 @@ export default function PDVPage() {
                   </button>
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'cartao' ? styles.pagamentoButtonActive : ''}`}
-                    onClick={() => setMetodoPagamento('cartao')}
+                    onClick={() => handleMetodoPagamento('cartao')}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <CreditCardIcon size={18} color={metodoPagamento === 'cartao' ? 'white' : '#6b7280'} />
@@ -999,13 +1014,42 @@ export default function PDVPage() {
                   </button>
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'pix' ? styles.pagamentoButtonActive : ''}`}
-                    onClick={() => setMetodoPagamento('pix')}
+                    onClick={() => handleMetodoPagamento('pix')}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <SmartphoneIcon size={18} color={metodoPagamento === 'pix' ? 'white' : '#6b7280'} />
                     PIX
                   </button>
                 </div>
+                {metodoPagamento === 'cartao' && (
+                  <div style={{ marginTop: 16 }}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                      Parcelas no cartão
+                    </label>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <select
+                        value={parcelas}
+                        onChange={(e) => setParcelas(Number(e.target.value))}
+                        style={{
+                          padding: '8px 12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: 6,
+                          fontSize: 14,
+                          flex: '0 0 140px',
+                        }}
+                      >
+                        {parcelasDisponiveis.map((parcela) => (
+                          <option key={parcela} value={parcela}>
+                            {parcela}x
+                          </option>
+                        ))}
+                      </select>
+                      <div style={{ fontSize: 13, color: '#6b7280' }}>
+                        ≈ R$ {(total / parcelas).toFixed(2)} por parcela
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className={styles.actionButtons}>
@@ -1092,6 +1136,14 @@ export default function PDVPage() {
               >
                 ×
               </button>
+            </div>
+            <div style={{ marginBottom: 16, padding: '12px', backgroundColor: '#f9fafb', borderRadius: 6, border: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: 13, color: '#374151' }}>
+                Parcelas selecionadas: <strong>{parcelas}x</strong>
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280' }}>
+                Valor estimado por parcela: R$ {(total / parcelas).toFixed(2)}
+              </div>
             </div>
 
             <div style={{ marginBottom: 16 }}>

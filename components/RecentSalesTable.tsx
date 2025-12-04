@@ -4,8 +4,9 @@ import { ShoppingCartIcon } from '@/components/icons'
 
 interface Venda {
   id: string
-  numero: string
+  numero?: string | null
   total: number
+  parcelas?: number
   data: string
   produtos: Array<{
     nome: string
@@ -149,7 +150,7 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
                   color: '#111827',
                 }}
               >
-                {venda.numero}
+                {venda.numero ? venda.numero.replace(/^PDV-?/i, '') : venda.id}
               </td>
               <td
                 style={{
@@ -189,6 +190,11 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
                 }}
               >
                 {formatCurrency(venda.total)}
+                {venda.parcelas && venda.parcelas > 1 && (
+                  <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                    {venda.parcelas}x no cartão
+                  </div>
+                )}
               </td>
               <td
                 style={{

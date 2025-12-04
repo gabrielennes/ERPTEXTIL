@@ -10,6 +10,11 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client)
 const preference = new Preference(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 export async function POST(request: NextRequest) {
   // Verificar autenticação
   const session = await getSession()
@@ -45,12 +50,14 @@ export async function POST(request: NextRequest) {
       if (vendaPorPaymentId) {
         // Venda já tem esse paymentId, apenas atualizar status
         const paymentData = await payment.get({ id: paymentId })
+        const parcelasPagamento = getParcelasFromPayment(paymentData)
         const vendaAtualizada = await prisma.venda.update({
           where: { id: vendaPorPaymentId.id },
           data: {
             statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                             paymentData.status === 'rejected' ? 'rejected' : 
                             paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+            ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
           },
         })
         
@@ -64,6 +71,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar informações do pagamento no Mercado Pago
     const paymentData = await payment.get({ id: paymentId })
+    const parcelasPagamento = getParcelasFromPayment(paymentData)
     
     let vendaId = vendaIdParam
     
@@ -85,7 +93,7 @@ export async function POST(request: NextRequest) {
           console.log(`✅ Venda encontrada pelo preferenceId: ${vendaId}`)
         } else {
           // Se não encontrou pelo preferenceId, tentar buscar pela preferência do Mercado Pago
-          const preferenceData = await preference.get({ id: preferenceId })
+          const preferenceData = await preference.get({ preferenceId })
           
           // Tentar pegar vendaId do metadata do pagamento
           if (paymentData.metadata && paymentData.metadata.vendaId) {
@@ -178,6 +186,7 @@ export async function POST(request: NextRequest) {
                         paymentData.status === 'rejected' ? 'rejected' : 
                         paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
         paymentId: paymentId.toString(),
+        ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
       },
     })
 

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Buscar a preferência
-    const preferenceData = await preference.get({ id: preferenceId })
+    const preferenceData = await preference.get({ preferenceId })
     
     // Buscar venda se não foi passada
     let venda = null

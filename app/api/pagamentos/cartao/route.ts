@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { vendaId, total, itens, dadosCartao } = body
+    const { vendaId, total, itens, dadosCartao, parcelas } = body
 
     if (!vendaId || !total || !dadosCartao) {
       return NextResponse.json(
@@ -53,12 +53,15 @@ export async function POST(request: NextRequest) {
     else if (firstDigit === '5') paymentMethodId = 'master'
     else if (firstDigit === '3') paymentMethodId = 'amex'
 
+    const numeroParcelas =
+      typeof parcelas === 'number' && parcelas > 0 ? Math.floor(parcelas) : 1
+
     // Para processar pagamento direto com cartão, precisamos usar a estrutura correta
     // O Mercado Pago requer tokenização do cartão, mas para testes podemos usar a estrutura alternativa
     const paymentData: any = {
       transaction_amount: parseFloat(total),
       description: `Venda #${vendaId}`,
-      installments: 1,
+      installments: numeroParcelas,
       payment_method_id: paymentMethodId,
       payer: {
         email: 'test@test.com', // Em produção, pegue do usuário logado
@@ -83,6 +86,7 @@ export async function POST(request: NextRequest) {
       },
       metadata: {
         vendaId: vendaId,
+        parcelas: numeroParcelas,
       },
     }
 
@@ -99,6 +103,7 @@ export async function POST(request: NextRequest) {
         statusPagamento: paymentResponse.status === 'approved' ? 'approved' : 
                         paymentResponse.status === 'rejected' ? 'rejected' : 'pending',
         paymentId: paymentResponse.id?.toString() || null,
+        parcelas: numeroParcelas,
       },
     })
 

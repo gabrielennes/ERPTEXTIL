@@ -38,8 +38,9 @@ interface DashboardData {
   }>
   ultimasVendas: Array<{
     id: string
-    numero: string
+    numero?: string | null
     total: number
+    parcelas?: number
     data: string
     produtos: Array<{
       nome: string

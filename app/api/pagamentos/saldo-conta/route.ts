@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { vendaId, total, itens } = body
+    const { vendaId, total, itens, parcelas } = body
 
     if (!vendaId || !total) {
       return NextResponse.json(
@@ -35,6 +35,9 @@ export async function POST(request: NextRequest) {
 
     // Criar pagamento usando saldo em conta (account_money)
     // Esta é a Payments API direta - gera payment_id imediatamente
+    const numeroParcelas =
+      typeof parcelas === 'number' && parcelas > 0 ? Math.floor(parcelas) : 1
+
     const paymentData = {
       transaction_amount: parseFloat(total),
       description: `Venda #${vendaId}`,
@@ -44,6 +47,7 @@ export async function POST(request: NextRequest) {
       },
       metadata: {
         vendaId: vendaId,
+        parcelas: numeroParcelas,
       },
     }
 
@@ -66,6 +70,7 @@ export async function POST(request: NextRequest) {
                         paymentResponse.status === 'rejected' ? 'rejected' : 
                         paymentResponse.status === 'cancelled' ? 'cancelled' : 'pending',
         paymentId: paymentResponse.id?.toString() || null,
+        parcelas: numeroParcelas,
       },
     })
 

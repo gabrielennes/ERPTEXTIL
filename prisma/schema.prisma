@@ -62,15 +62,18 @@ model Variacao {
 
 model Venda {
   id            String      @id @default(cuid())
+  numero        String?
   total         Float
   subtotal      Float
   desconto      Float       @default(0)
   taxa          Float       @default(0)
   metodoPagamento String
+  parcelas      Int         @default(1)
   statusPagamento String?   // pending, approved, rejected, cancelled
   paymentId     String?     // ID do pagamento no Mercado Pago
   preferenceId  String?     // ID da preferência no Mercado Pago (para buscar pagamentos relacionados)
   userId        String?
+  dataVenda     DateTime    @default(now())
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   itens         ItensVenda[]

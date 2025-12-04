@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { Prisma } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   // Verificar autenticação
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
       statusPagamento,
       paymentId,
       preferenceId,
+      parcelas,
     } = body
 
     // Validações
@@ -48,11 +50,51 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const gerarNumeroVenda = async (tx: Prisma.TransactionClient) => {
+      const agora = new Date()
+      const ano = agora.getFullYear()
+      const mes = String(agora.getMonth() + 1).padStart(2, '0')
+      const dia = String(agora.getDate()).padStart(2, '0')
+      const prefixo = `${ano}${mes}${dia}`
+
+      const ultimaVendaDia = await tx.venda.findFirst({
+        where: {
+          numero: {
+            startsWith: prefixo,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          numero: true,
+        },
+      })
+
+      let sequencia = 1
+      if (ultimaVendaDia?.numero) {
+        const partes = ultimaVendaDia.numero.split('-')
+        const ultimaParte = partes[partes.length - 1]
+        const numeroSequencial = parseInt(ultimaParte, 10)
+        if (!isNaN(numeroSequencial)) {
+          sequencia = numeroSequencial + 1
+        }
+      }
+
+      return `${prefixo}-${sequencia.toString().padStart(3, '0')}`
+    }
+
     // Criar venda com itens usando transação
+    const numeroParcelas =
+      typeof parcelas === 'number' && parcelas > 0 ? Math.floor(parcelas) : 1
+
     const venda = await prisma.$transaction(async (tx) => {
+      const numeroVenda = await gerarNumeroVenda(tx)
+
       // Criar venda
       const novaVenda = await tx.venda.create({
         data: {
+          numero: numeroVenda,
           total: parseFloat(total),
           subtotal: parseFloat(subtotal || total),
           desconto: parseFloat(desconto || 0),
@@ -61,7 +103,9 @@ export async function POST(request: NextRequest) {
           statusPagamento: statusPagamento || 'pending',
           paymentId: paymentId || null,
           preferenceId: preferenceId || null,
-          userId: session.userId || null,
+          userId: null,
+          parcelas: numeroParcelas,
+          dataVenda: new Date(),
         },
       })
 
@@ -97,7 +141,7 @@ export async function POST(request: NextRequest) {
 
       return {
         ...novaVenda,
-        itens: itensVenda,
+          itens: itensVenda,
       }
     })
 

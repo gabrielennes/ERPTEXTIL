@@ -10,6 +10,11 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client)
 const preference = new Preference(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 // Esta API busca pagamentos recentes do Mercado Pago e atualiza vendas pendentes automaticamente
 export async function POST(request: NextRequest) {
   // Verificar autenticação
@@ -66,7 +71,7 @@ export async function POST(request: NextRequest) {
     if (prefId) {
       try {
         console.log(`🔍 Buscando preferência: ${prefId}`)
-        const preferenceData = await preference.get({ id: prefId })
+        const preferenceData = (await preference.get({ preferenceId: prefId })) as any
         
         console.log('📋 Dados da preferência:', {
           id: preferenceData.id,
@@ -95,6 +100,7 @@ export async function POST(request: NextRequest) {
               const metadataCorresponde = paymentData.metadata?.vendaId === vendaId
               
               if (valorCorresponde || metadataCorresponde) {
+                const parcelasPagamento = getParcelasFromPayment(paymentData)
                 console.log(`✅ Pagamento encontrado! ID: ${paymentData.id}, Status: ${paymentData.status}`)
                 
                 // Atualizar a venda
@@ -105,6 +111,7 @@ export async function POST(request: NextRequest) {
                     statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                                     paymentData.status === 'rejected' ? 'rejected' : 
                                     paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+                    ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
                   },
                 })
                 
@@ -151,10 +158,11 @@ export async function POST(request: NextRequest) {
         // Calcular data de início (2 horas antes da criação da venda)
         const dataVenda = new Date(venda.createdAt)
         const duasHorasAtras = new Date(dataVenda.getTime() - 2 * 60 * 60 * 1000)
-        const dataInicio = duasHorasAtras.toISOString().split('T')[0] // Formato YYYY-MM-DD
+        const dataFim = encodeURIComponent(new Date(dataVenda.getTime() + 2 * 60 * 60 * 1000).toISOString())
+        const dataInicio = encodeURIComponent(duasHorasAtras.toISOString())
         
         // Buscar pagamentos aprovados recentes usando a API REST
-        const searchUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&date_created.from=${dataInicio}&sort=date_created&criteria=desc&limit=50`
+        const searchUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&range=date_created&begin_date=${dataInicio}&end_date=${dataFim}&sort=date_created&criteria=desc&limit=50`
         
         const searchResponse = await fetch(searchUrl, {
           method: 'GET',
@@ -182,6 +190,7 @@ export async function POST(request: NextRequest) {
               
               // Se o valor corresponde E (metadata corresponde OU está relacionado à preferência)
               if (valorCorresponde && (metadataCorresponde || relacionadoPreferencia)) {
+                const parcelasPagamento = getParcelasFromPayment(paymentResult)
                 console.log(`✅ Pagamento encontrado via busca REST! ID: ${paymentResult.id}, Status: ${paymentResult.status}`)
                 
                 // Atualizar a venda
@@ -192,6 +201,7 @@ export async function POST(request: NextRequest) {
                     statusPagamento: paymentResult.status === 'approved' ? 'approved' : 
                                     paymentResult.status === 'rejected' ? 'rejected' : 
                                     paymentResult.status === 'cancelled' ? 'cancelled' : 'pending',
+                    ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
                   },
                 })
                 

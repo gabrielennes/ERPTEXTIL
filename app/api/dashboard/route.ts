@@ -24,9 +24,14 @@ export async function GET() {
     const hojeInicio = new Date(hoje)
     hojeInicio.setHours(0, 0, 0, 0)
 
-    // Vendas de hoje
+    const whereAprovadas = {
+      statusPagamento: 'approved' as const,
+    }
+
+    // Vendas de hoje (apenas aprovadas)
     const vendasHoje = await prisma.venda.findMany({
       where: {
+        ...whereAprovadas,
         createdAt: {
           gte: hojeInicio,
         },
@@ -35,7 +40,9 @@ export async function GET() {
 
     const totalVendasHoje = vendasHoje.reduce((acc, v) => acc + v.total, 0)
 
-    const todasVendas = await prisma.venda.findMany()
+    const todasVendas = await prisma.venda.findMany({
+      where: whereAprovadas,
+    })
     const totalVendas = todasVendas.reduce((acc, v) => acc + v.total, 0)
 
     // Vendas do mês atual
@@ -47,6 +54,7 @@ export async function GET() {
 
     const vendasMes = await prisma.venda.findMany({
       where: {
+        ...whereAprovadas,
         createdAt: {
           gte: inicioMes,
           lte: fimMes,
@@ -92,6 +100,7 @@ export async function GET() {
 
     // Últimas 5 vendas
     const ultimasVendas = await prisma.venda.findMany({
+      where: whereAprovadas,
       include: {
         itens: {
           include: {
@@ -130,11 +139,12 @@ export async function GET() {
       })),
       ultimasVendas: ultimasVendas.map((v) => ({
         id: v.id,
-        numero: v.id.slice(-8).toUpperCase(),
+        numero: (v as any).numero || v.id,
         total: v.total,
-        data: v.createdAt.toISOString(),
+        parcelas: (v as any).parcelas ?? 1,
+        data: (v as any).dataVenda ? (v as any).dataVenda.toISOString() : v.createdAt.toISOString(),
         produtos: v.itens.map((i) => ({
-          nome: i.produto.nome,
+          nome: i.produto?.nome || i.variacao?.produto?.nome || 'Produto',
           quantidade: i.quantidade,
           precoUnitario: i.precoUnitario,
         })),

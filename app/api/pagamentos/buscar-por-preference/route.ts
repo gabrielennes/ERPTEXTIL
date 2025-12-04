@@ -10,6 +10,11 @@ const client = new MercadoPagoConfig({
 const preference = new Preference(client)
 const payment = new Payment(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 export async function POST(request: NextRequest) {
   // Verificar autenticação
   const session = await getSession()
@@ -32,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Buscar a preferência
-    const preferenceData = await preference.get({ id: preferenceId })
+    const preferenceData = await preference.get({ preferenceId })
     
     if (!preferenceData) {
       return NextResponse.json(
@@ -104,6 +109,7 @@ export async function POST(request: NextRequest) {
       const ultimoPaymentId = preferenceData.payment_ids[preferenceData.payment_ids.length - 1]
       try {
         const paymentData = await payment.get({ id: ultimoPaymentId })
+        const parcelasPagamento = getParcelasFromPayment(paymentData)
         
         // Verificar se o metadata corresponde OU se o valor corresponde
         const valorCorresponde = Math.abs((paymentData.transaction_amount || 0) - venda.total) < 0.01
@@ -118,6 +124,7 @@ export async function POST(request: NextRequest) {
               statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                               paymentData.status === 'rejected' ? 'rejected' : 
                               paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+              ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
             },
           })
           

@@ -10,6 +10,11 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client)
 const preference = new Preference(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 // Esta API verifica vendas pendentes e tenta atualizar automaticamente
 // Pode ser chamada periodicamente ou manualmente
 export async function POST(request: NextRequest) {
@@ -56,6 +61,7 @@ export async function POST(request: NextRequest) {
         if (venda.paymentId) {
           try {
             const paymentData = await payment.get({ id: venda.paymentId })
+            const parcelasPagamento = getParcelasFromPayment(paymentData)
             
             await prisma.venda.update({
               where: { id: venda.id },
@@ -63,6 +69,7 @@ export async function POST(request: NextRequest) {
                 statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                                paymentData.status === 'rejected' ? 'rejected' : 
                                paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+                ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
               },
             })
             

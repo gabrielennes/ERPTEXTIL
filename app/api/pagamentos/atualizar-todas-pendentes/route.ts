@@ -10,6 +10,11 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client)
 const preference = new Preference(client)
 
+const getParcelasFromPayment = (paymentData: any) =>
+  typeof paymentData?.installments === 'number' && paymentData.installments > 0
+    ? paymentData.installments
+    : undefined
+
 export async function POST(request: NextRequest) {
   // Verificar autenticação
   const session = await getSession()
@@ -51,6 +56,7 @@ export async function POST(request: NextRequest) {
         if (venda.paymentId) {
           try {
             const paymentData = await payment.get({ id: venda.paymentId })
+            const parcelasPagamento = getParcelasFromPayment(paymentData)
             
             await prisma.venda.update({
               where: { id: venda.id },
@@ -58,6 +64,7 @@ export async function POST(request: NextRequest) {
                 statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                                 paymentData.status === 'rejected' ? 'rejected' : 
                                 paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+                ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
               },
             })
             
@@ -72,7 +79,9 @@ export async function POST(request: NextRequest) {
               console.log(`🔍 Buscando pagamento para venda ${venda.id} usando preferenceId: ${venda.preferenceId}`)
               
               // Buscar a preferência
-              const preferenceData = await preference.get({ id: venda.preferenceId })
+              const preferenceData = (await preference.get({
+                preferenceId: venda.preferenceId,
+              })) as any
               
               // Verificar se a preferência tem payment_ids
               if (preferenceData.payment_ids && preferenceData.payment_ids.length > 0) {
@@ -90,6 +99,7 @@ export async function POST(request: NextRequest) {
                     const metadataCorresponde = paymentData.metadata?.vendaId === venda.id
                     
                     if (valorCorresponde || metadataCorresponde) {
+                      const parcelasPagamento = getParcelasFromPayment(paymentData)
                       // Atualizar a venda
                       await prisma.venda.update({
                         where: { id: venda.id },
@@ -98,6 +108,7 @@ export async function POST(request: NextRequest) {
                           statusPagamento: paymentData.status === 'approved' ? 'approved' : 
                                           paymentData.status === 'rejected' ? 'rejected' : 
                                           paymentData.status === 'cancelled' ? 'cancelled' : 'pending',
+                          ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
                         },
                       })
                       
@@ -117,8 +128,130 @@ export async function POST(request: NextRequest) {
                   resultados.naoEncontradas++
                 }
               } else {
-                console.log(`⚠️ Preferência ${venda.preferenceId} não tem payment_ids ainda`)
-                resultados.naoEncontradas++
+                console.log(`⚠️ Preferência ${venda.preferenceId} não tem payment_ids ainda. Tentando busca alternativa...`)
+                
+                // ESTRATÉGIA ALTERNATIVA: Buscar pagamentos aprovados recentes usando API REST
+                // e verificar se algum está relacionado a esta preferência
+                try {
+                  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
+                  if (accessToken) {
+                    // Buscar pagamentos aprovados das últimas 24 horas
+                    const dataVenda = new Date(venda.createdAt)
+                    const vinteQuatroHorasAtras = new Date(dataVenda.getTime() - 24 * 60 * 60 * 1000)
+                    const dataInicio = encodeURIComponent(vinteQuatroHorasAtras.toISOString())
+                    const dataFim = encodeURIComponent(new Date(dataVenda.getTime() + 2 * 60 * 60 * 1000).toISOString())
+                    
+                    // Buscar pagamentos aprovados recentes
+                    const searchUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&range=date_created&begin_date=${dataInicio}&end_date=${dataFim}&sort=date_created&criteria=desc&limit=100`
+                    
+                    console.log(`🔍 Buscando pagamentos aprovados recentes para venda ${venda.id}...`)
+                    
+                    const searchResponse = await fetch(searchUrl, {
+                      method: 'GET',
+                      headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                      },
+                    })
+                    
+                    if (searchResponse.ok) {
+                      const searchData = await searchResponse.json()
+                      console.log(`📊 Encontrados ${searchData.results?.length || 0} pagamentos aprovados recentes`)
+                      
+                      let encontrado = false
+                      
+                      // Procurar pagamento que corresponda ao valor E esteja relacionado à preferência
+                      if (searchData.results && searchData.results.length > 0) {
+                        for (const paymentResult of searchData.results) {
+                          const valorCorresponde = Math.abs((paymentResult.transaction_amount || 0) - venda.total) < 0.01
+                          const metadataCorresponde = paymentResult.metadata?.vendaId === venda.id
+                          
+                          // Verificar se o pagamento está relacionado à preferência
+                          // O order.id pode ser o preferenceId ou o external_reference pode conter o preferenceId
+                          let relacionadoPreferencia = false
+                          
+                          // Verificar order.id
+                          if (paymentResult.order?.id) {
+                            relacionadoPreferencia = paymentResult.order.id.toString() === venda.preferenceId.toString()
+                          }
+                          
+                          // Verificar external_reference
+                          if (!relacionadoPreferencia && paymentResult.external_reference) {
+                            relacionadoPreferencia = paymentResult.external_reference.toString() === venda.preferenceId.toString()
+                          }
+                          
+                          // Verificar se o payment tem metadata com preferenceId
+                          if (!relacionadoPreferencia && paymentResult.metadata?.preferenceId) {
+                            relacionadoPreferencia = paymentResult.metadata.preferenceId.toString() === venda.preferenceId.toString()
+                          }
+                          
+                          // Se o valor corresponde E (metadata corresponde OU está relacionado à preferência)
+                          // Também verificar se a data está próxima para evitar falsos positivos
+                          const dataPagamento = paymentResult.date_created ? new Date(paymentResult.date_created) : null
+                          const dataVendaObj = new Date(venda.createdAt)
+                          const diferencaHoras = dataPagamento ? Math.abs(dataPagamento.getTime() - dataVendaObj.getTime()) / (1000 * 60 * 60) : Infinity
+                          const dataProxima = diferencaHoras <= 2 // Dentro de 2 horas
+                          
+                          // Verificar se já existe outra venda com este paymentId (evitar duplicação)
+                          const vendaComPaymentId = await prisma.venda.findFirst({
+                            where: {
+                              paymentId: paymentResult.id?.toString(),
+                              id: { not: venda.id },
+                            },
+                          })
+                          
+                          // Atualizar se: valor corresponde exatamente, data próxima (dentro de 2 horas), não há outra venda com este paymentId
+                          // E (metadata corresponde OU está relacionado à preferência OU valor exato e data muito próxima - 30 min)
+                          // Para evitar falsos positivos, ser mais restritivo: precisa ter metadata OU relacionado à preferência OU data muito próxima
+                          const correspondeCompletamente = valorCorresponde && dataProxima && !vendaComPaymentId && 
+                            (metadataCorresponde || relacionadoPreferencia || (diferencaHoras <= 0.5 && valorCorresponde))
+                          
+                          if (correspondeCompletamente) {
+                            const parcelasPagamento = getParcelasFromPayment(paymentResult)
+                            // Se o valor corresponde, a data está próxima e não há outra venda com este paymentId, atualizar
+                            console.log(`✅ Pagamento encontrado via busca REST! ID: ${paymentResult.id}, Status: ${paymentResult.status}`)
+                            console.log(`   Valor: ${paymentResult.transaction_amount}, Venda: ${venda.total}`)
+                            console.log(`   Diferença de horas: ${diferencaHoras.toFixed(2)}`)
+                            
+                            // Atualizar a venda
+                            await prisma.venda.update({
+                              where: { id: venda.id },
+                              data: {
+                                paymentId: paymentResult.id?.toString() || null,
+                                statusPagamento: paymentResult.status === 'approved' ? 'approved' : 
+                                                paymentResult.status === 'rejected' ? 'rejected' : 
+                                                paymentResult.status === 'cancelled' ? 'cancelled' : 'pending',
+                                ...(parcelasPagamento ? { parcelas: parcelasPagamento } : {}),
+                              },
+                            })
+                            
+                            console.log(`✅ Venda ${venda.id} atualizada automaticamente via busca REST!`)
+                            console.log(`   Payment ID: ${paymentResult.id}`)
+                            console.log(`   Status: ${paymentResult.status}`)
+                            
+                            resultados.atualizadas++
+                            encontrado = true
+                            break
+                          }
+                        }
+                      }
+                      
+                      if (!encontrado) {
+                        console.log(`⚠️ Nenhum pagamento aprovado encontrado para venda ${venda.id} com preferenceId ${venda.preferenceId}`)
+                        resultados.naoEncontradas++
+                      }
+                    } else {
+                      console.error(`Erro ao buscar pagamentos via REST: ${searchResponse.status}`)
+                      resultados.naoEncontradas++
+                    }
+                  } else {
+                    console.error('MERCADOPAGO_ACCESS_TOKEN não configurado')
+                    resultados.naoEncontradas++
+                  }
+                } catch (restError: any) {
+                  console.error(`Erro ao buscar pagamentos via REST para venda ${venda.id}:`, restError.message)
+                  resultados.naoEncontradas++
+                }
               }
             } catch (err: any) {
               console.error(`Erro ao buscar preferência para venda ${venda.id}:`, err.message)

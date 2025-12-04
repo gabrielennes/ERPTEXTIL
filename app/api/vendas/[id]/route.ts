@@ -18,7 +18,7 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const { statusPagamento, paymentId, preferenceId } = body
+    const { statusPagamento, paymentId, preferenceId, parcelas } = body
 
     // Atualizar apenas os campos fornecidos
     const updateData: any = {}
@@ -30,6 +30,9 @@ export async function PATCH(
     }
     if (preferenceId) {
       updateData.preferenceId = preferenceId
+    }
+    if (typeof parcelas === 'number') {
+      updateData.parcelas = parcelas
     }
 
     if (Object.keys(updateData).length === 0) {
