@@ -51,42 +51,37 @@ export async function POST(request: NextRequest) {
     }
 
     const gerarNumeroVenda = async (tx: Prisma.TransactionClient) => {
-      // Gerar código alfanumérico único no formato #XXXXX
-      const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-      let codigo = ''
-      
-      // Gerar código de 8 caracteres
-      for (let i = 0; i < 8; i++) {
-        codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length))
-      }
-      
-      const numeroVenda = `#${codigo}`
-      
-      // Verificar se já existe (muito improvável, mas por segurança)
-      const vendaExistente = await tx.venda.findFirst({
+      const agora = new Date()
+      const ano = agora.getFullYear()
+      const mes = String(agora.getMonth() + 1).padStart(2, '0')
+      const dia = String(agora.getDate()).padStart(2, '0')
+      const prefixo = `${ano}${mes}${dia}`
+
+      const ultimaVendaDia = await tx.venda.findFirst({
         where: {
-          numero: numeroVenda,
+          numero: {
+            startsWith: prefixo,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          numero: true,
         },
       })
-      
-      // Se existir, gerar novamente (máximo 10 tentativas)
-      if (vendaExistente) {
-        for (let tentativa = 0; tentativa < 10; tentativa++) {
-          codigo = ''
-          for (let i = 0; i < 8; i++) {
-            codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length))
-          }
-          const novoNumero = `#${codigo}`
-          const existe = await tx.venda.findFirst({
-            where: { numero: novoNumero },
-          })
-          if (!existe) {
-            return novoNumero
-          }
+
+      let sequencia = 1
+      if (ultimaVendaDia?.numero) {
+        const partes = ultimaVendaDia.numero.split('-')
+        const ultimaParte = partes[partes.length - 1]
+        const numeroSequencial = parseInt(ultimaParte, 10)
+        if (!isNaN(numeroSequencial)) {
+          sequencia = numeroSequencial + 1
         }
       }
-      
-      return numeroVenda
+
+      return `${prefixo}-${sequencia.toString().padStart(3, '0')}`
     }
 
     // Criar venda com itens usando transação
