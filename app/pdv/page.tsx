@@ -999,7 +999,6 @@ export default function PDVPage() {
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'dinheiro' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => handleMetodoPagamento('dinheiro')}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <DollarSignIcon size={18} color={metodoPagamento === 'dinheiro' ? 'white' : '#6b7280'} />
                     Dinheiro
@@ -1007,7 +1006,6 @@ export default function PDVPage() {
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'cartao' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => handleMetodoPagamento('cartao')}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <CreditCardIcon size={18} color={metodoPagamento === 'cartao' ? 'white' : '#6b7280'} />
                     Cartão
@@ -1015,7 +1013,6 @@ export default function PDVPage() {
                   <button 
                     className={`${styles.pagamentoButton} ${metodoPagamento === 'pix' ? styles.pagamentoButtonActive : ''}`}
                     onClick={() => handleMetodoPagamento('pix')}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <SmartphoneIcon size={18} color={metodoPagamento === 'pix' ? 'white' : '#6b7280'} />
                     PIX

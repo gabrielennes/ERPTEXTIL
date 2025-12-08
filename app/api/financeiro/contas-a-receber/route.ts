@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         cliente: true,
       },
       orderBy: {
-        dataRecebimento: 'asc',
+        dataVencimento: 'asc',
       },
     })
 
@@ -77,8 +77,10 @@ export async function POST(request: NextRequest) {
       valor,
       parcelas,
       valorTotal,
-      dataRecebimento,
-      tipoTransacao,
+      dataVencimento,
+      dataRecebimento, // Mantido para compatibilidade
+      categoriaFinanceira,
+      tipoTransacao, // Mantido para compatibilidade
       chavePix,
       contaBancaria,
       codigoBarras,
@@ -86,40 +88,25 @@ export async function POST(request: NextRequest) {
       pdfNome,
     } = body
 
+    // Usar categoriaFinanceira se fornecido, senão usar tipoTransacao (compatibilidade)
+    const categoria = categoriaFinanceira || tipoTransacao || ''
+    
+    // Usar dataVencimento se fornecido, senão usar dataRecebimento (compatibilidade)
+    const dataVenc = dataVencimento || dataRecebimento
+
     // Validar dados obrigatórios
-    if (!clienteId || !valor || !parcelas || !valorTotal || !dataRecebimento || !tipoTransacao) {
+    if (!clienteId || !valor || !parcelas || !valorTotal || !dataVenc || !categoria) {
       return NextResponse.json(
         { error: 'Dados obrigatórios não fornecidos' },
         { status: 400 }
       )
     }
 
-    // Validar campos específicos por tipo de transação
-    if (tipoTransacao === 'PIX' && !chavePix) {
-      return NextResponse.json(
-        { error: 'Chave PIX é obrigatória para transações PIX' },
-        { status: 400 }
-      )
-    }
-
-    if ((tipoTransacao === 'TED' || tipoTransacao === 'DOC') && !contaBancaria) {
-      return NextResponse.json(
-        { error: 'Conta bancária é obrigatória para TED/DOC' },
-        { status: 400 }
-      )
-    }
-
-    if (tipoTransacao === 'Boleto' && !codigoBarras) {
-      return NextResponse.json(
-        { error: 'Código de barras é obrigatório para Boleto' },
-        { status: 400 }
-      )
-    }
-
-    // Converter dataRecebimento para Date
-    const dataRecebimentoDate = new Date(dataRecebimento)
+    // Converter dataVencimento para Date
+    const dataVencimentoDate = new Date(dataVenc)
 
     // Criar conta a receber
+    // Mapear categoriaFinanceira para tipoTransacao no banco (mantém compatibilidade)
     const conta = await prisma.contasAReceber.create({
       data: {
         clienteId,
@@ -127,11 +114,11 @@ export async function POST(request: NextRequest) {
         valor: parseFloat(valor),
         parcelas: parseInt(parcelas),
         valorTotal: parseFloat(valorTotal),
-        dataRecebimento: dataRecebimentoDate,
-        tipoTransacao,
-        chavePix: tipoTransacao === 'PIX' ? chavePix : null,
-        contaBancaria: tipoTransacao === 'TED' || tipoTransacao === 'DOC' ? contaBancaria : null,
-        codigoBarras: tipoTransacao === 'Boleto' ? codigoBarras : null,
+        dataVencimento: dataVencimentoDate,
+        tipoTransacao: categoria, // Armazena a categoria financeira no campo tipoTransacao
+        chavePix: chavePix || null,
+        contaBancaria: contaBancaria || null,
+        codigoBarras: codigoBarras || null,
         pdfUrl: pdfUrl || null,
         pdfNome: pdfNome || null,
       },
