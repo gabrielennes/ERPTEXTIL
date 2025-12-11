@@ -247,19 +247,11 @@ export default function VendasPage() {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>Histórico de Vendas</h1>
-        <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>
+        <div className={styles.errorContainer}>
           <p>Erro: {error}</p>
           <button
             onClick={carregarVendas}
-            style={{
-              marginTop: '16px',
-              padding: '8px 16px',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
+            className={styles.errorButton}
           >
             Tentar Novamente
           </button>
@@ -411,44 +403,16 @@ export default function VendasPage() {
 
   return (
     <div className={styles.container}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div className={styles.headerActions}>
         <div>
           <h1 className={styles.title}>Histórico de Vendas</h1>
           <p className={styles.subtitle}>Todas as vendas realizadas</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className={styles.headerButtons}>
           <button
             onClick={handleExportCSV}
             disabled={vendas.length === 0}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              backgroundColor: '#1f2937',
-              color: 'white',
-              border: '1px solid #111827',
-              borderRadius: '8px',
-              cursor: vendas.length === 0 ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-              opacity: vendas.length === 0 ? 0.5 : 1,
-            }}
-            onMouseEnter={(e) => {
-              if (vendas.length > 0) {
-                e.currentTarget.style.backgroundColor = '#111827'
-                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (vendas.length > 0) {
-                e.currentTarget.style.backgroundColor = '#1f2937'
-                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-              }
-            }}
+            className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
             title="Exportar histórico de vendas para CSV"
           >
             <DownloadIcon size={18} color="white" />
@@ -475,30 +439,7 @@ export default function VendasPage() {
                 carregarVendas()
               }
             }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              backgroundColor: '#059669',
-              color: 'white',
-              border: '1px solid #047857',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#047857'
-              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#059669'
-              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-            }}
+            className={`${styles.actionButton} ${styles.actionButtonSuccess}`}
             title="Atualizar status de todas as vendas pendentes"
           >
             <CheckIcon size={18} color="white" />
@@ -506,30 +447,7 @@ export default function VendasPage() {
           </button>
           <button
             onClick={carregarVendas}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: '1px solid #1d4ed8',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#1d4ed8'
-              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#2563eb'
-              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-            }}
+            className={`${styles.actionButton} ${styles.actionButtonInfo}`}
           >
             <RefreshIcon size={18} color="white" />
             Recarregar
@@ -538,109 +456,37 @@ export default function VendasPage() {
       </div>
 
       {/* Filtro de Data */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        marginBottom: '24px',
-      }}>
-        <div style={{ 
-          fontSize: '16px', 
-          fontWeight: 600, 
-          marginBottom: '16px',
-          color: '#1f2937',
-          letterSpacing: '-0.01em',
-        }}>
+      <div className={styles.filterSection}>
+        <div className={styles.filterTitle}>
           Filtro de Data
         </div>
-        <div style={{ 
-          display: 'flex', 
-          gap: '16px', 
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-        }}>
-          <div style={{ flex: '1', minWidth: '200px' }}>
-            <label style={{ 
-              display: 'block', 
-              fontSize: '14px', 
-              fontWeight: 500, 
-              marginBottom: '8px',
-              color: '#374151',
-            }}>
+        <div className={styles.filterRow}>
+          <div className={styles.filterField}>
+            <label className={styles.filterLabel}>
               Data Inicial
             </label>
             <input
               type="date"
               value={dataInicial}
               onChange={(e) => setDataInicial(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                fontSize: '14px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              className={styles.filterInput}
             />
           </div>
-          <div style={{ flex: '1', minWidth: '200px' }}>
-            <label style={{ 
-              display: 'block', 
-              fontSize: '14px', 
-              fontWeight: 500, 
-              marginBottom: '8px',
-              color: '#374151',
-            }}>
+          <div className={styles.filterField}>
+            <label className={styles.filterLabel}>
               Data Final
             </label>
             <input
               type="date"
               value={dataFinal}
               onChange={(e) => setDataFinal(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                fontSize: '14px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              className={styles.filterInput}
             />
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className={styles.filterButtons}>
             <button
               onClick={carregarVendas}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '12px 24px',
-                backgroundColor: '#1f2937',
-                color: 'white',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#111827'
-                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#1f2937'
-                e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-              }}
+              className={styles.filterButton}
             >
               <FilterIcon size={18} color="white" />
               Filtrar
@@ -651,32 +497,7 @@ export default function VendasPage() {
                   limparFiltros()
                   setTimeout(carregarVendas, 100)
                 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 24px',
-                  backgroundColor: 'white',
-                  color: '#6b7280',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f9fafb'
-                  e.currentTarget.style.borderColor = '#9ca3af'
-                  e.currentTarget.style.color = '#374151'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white'
-                  e.currentTarget.style.borderColor = '#d1d5db'
-                  e.currentTarget.style.color = '#6b7280'
-                }}
+                className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
               >
                 <XIcon size={18} color="currentColor" />
                 Limpar Filtros
@@ -687,38 +508,18 @@ export default function VendasPage() {
       </div>
 
       {/* Resumo */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-        marginBottom: '32px',
-      }}>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total de Vendas</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: '#1f2937' }}>{vendas.length}</div>
+      <div className={styles.metricsGrid}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>Total de Vendas</div>
+          <div className={styles.metricValue}>{vendas.length}</div>
         </div>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Vendas Aprovadas</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: '#10b981' }}>{vendasAprovadas}</div>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>Vendas Aprovadas</div>
+          <div className={styles.metricValueSuccess}>{vendasAprovadas}</div>
         </div>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total Arrecadado</div>
-          <div style={{ fontSize: '24px', fontWeight: 600, color: '#10b981' }}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>Total Arrecadado</div>
+          <div className={styles.metricValueSuccess}>
             R$ {totalVendas.toFixed(2)}
           </div>
         </div>
@@ -734,69 +535,38 @@ export default function VendasPage() {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className={styles.vendasList}>
           {vendas.map((venda) => {
             const status = getStatusBadge(venda.statusPagamento)
             return (
               <div
                 key={venda.id}
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  padding: '20px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                }}
+                className={styles.vendaCard}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '20px' }}>{getMetodoPagamentoIcon(venda.metodoPagamento)}</span>
-                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>
+                <div className={styles.vendaHeader}>
+                  <div className={styles.vendaInfo}>
+                    <div className={styles.vendaTitleRow}>
+                      <span className={styles.vendaIcon}>{getMetodoPagamentoIcon(venda.metodoPagamento)}</span>
+                      <h3 className={styles.vendaTitle}>
                         {venda.numero ? `Venda ${formatarNumeroPedido(venda.numero)}` : `Venda #${venda.id.slice(-8).toUpperCase()}`}
                       </h3>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className={styles.vendaStatusRow}>
                       <span
+                        className={styles.statusBadge}
                         style={{
-                          padding: '6px 14px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: 600,
                           backgroundColor: `${status.color}15`,
                           color: status.color,
                           border: `1px solid ${status.color}30`,
-                          letterSpacing: '0.025em',
                         }}
                       >
                         {status.text}
                       </span>
                       {venda.statusPagamento === 'pending' && (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <div className={styles.vendaActions}>
                           <button
                             onClick={() => atualizarStatusVenda(venda.id, venda.paymentId)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              padding: '8px 14px',
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              backgroundColor: '#2563eb',
-                              color: 'white',
-                              border: '1px solid #1d4ed8',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#1d4ed8'
-                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb'
-                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-                            }}
+                            className={`${styles.vendaButton} ${styles.vendaButtonUpdate}`}
                             title="Buscar e atualizar status do pagamento automaticamente"
                           >
                             <RefreshIcon size={16} color="white" />
@@ -814,29 +584,7 @@ export default function VendasPage() {
                                 await atualizarStatusVenda(venda.id, paymentId.trim())
                               }
                             }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              padding: '8px 14px',
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              backgroundColor: '#7c3aed',
-                              color: 'white',
-                              border: '1px solid #6d28d9',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#6d28d9'
-                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#7c3aed'
-                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-                            }}
+                            className={`${styles.vendaButton} ${styles.vendaButtonTransaction}`}
                             title="Atualizar usando o número da transação do comprovante"
                           >
                             <TagIcon size={16} color="white" />
@@ -844,29 +592,7 @@ export default function VendasPage() {
                           </button>
                           <button
                             onClick={() => marcarComoAprovada(venda.id)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              padding: '8px 14px',
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              backgroundColor: '#059669',
-                              color: 'white',
-                              border: '1px solid #047857',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#047857'
-                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#059669'
-                              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)'
-                            }}
+                            className={`${styles.vendaButton} ${styles.vendaButtonApprove}`}
                             title="Marcar como aprovada manualmente (para testes Sandbox)"
                           >
                             <CheckIcon size={16} color="white" />
@@ -875,18 +601,18 @@ export default function VendasPage() {
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                    <div className={styles.vendaDate}>
                       <div>Data da Venda: {formatarData(venda.dataVenda)}</div>
-                      <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>
+                      <div className={styles.vendaDateSub}>
                         Criado em: {formatarData(venda.createdAt)}
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 600, color: '#1f2937' }}>
+                  <div className={styles.vendaTotal}>
+                    <div className={styles.vendaTotalValue}>
                       R$ {venda.total.toFixed(2)}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                    <div className={styles.vendaTotalMethod}>
                       {venda.metodoPagamento}
                       {venda.parcelas > 1 ? ` • ${venda.parcelas}x` : ''}
                     </div>
@@ -894,38 +620,28 @@ export default function VendasPage() {
                 </div>
 
                 {/* Itens da Venda */}
-                <div style={{
-                  borderTop: '1px solid #e5e7eb',
-                  paddingTop: '16px',
-                  marginTop: '16px',
-                }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#374151' }}>
+                <div className={styles.vendaItens}>
+                  <div className={styles.vendaItensTitle}>
                     Itens ({venda.itens.length})
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div className={styles.vendaItensList}>
                     {venda.itens.map((item) => (
                       <div
                         key={item.id}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          padding: '8px',
-                          backgroundColor: '#f9fafb',
-                          borderRadius: '6px',
-                        }}
+                        className={styles.vendaItem}
                       >
-                        <div>
-                          <div style={{ fontWeight: 500, fontSize: '14px' }}>{item.produto.nome}</div>
+                        <div className={styles.vendaItemInfo}>
+                          <div className={styles.vendaItemName}>{item.produto.nome}</div>
                           {item.variacao && (
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                            <div className={styles.vendaItemSku}>
                               SKU: {item.variacao.sku}
                             </div>
                           )}
-                          <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                          <div className={styles.vendaItemQuantity}>
                             {item.quantidade}x R$ {item.precoUnitario.toFixed(2)}
                           </div>
                         </div>
-                        <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                        <div className={styles.vendaItemPrice}>
                           R$ {item.subtotal.toFixed(2)}
                         </div>
                       </div>
@@ -935,25 +651,21 @@ export default function VendasPage() {
 
                 {/* Detalhes */}
                 {venda.desconto > 0 || venda.taxa > 0 ? (
-                  <div style={{
-                    borderTop: '1px solid #e5e7eb',
-                    paddingTop: '12px',
-                    marginTop: '12px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    fontSize: '13px',
-                    color: '#6b7280',
-                  }}>
+                  <div className={styles.vendaDetails}>
                     <div>
                       {venda.desconto > 0 && (
-                        <div>Desconto: -R$ {venda.desconto.toFixed(2)}</div>
+                        <div className={styles.vendaDetailsRow}>
+                          <span>Desconto: -R$ {venda.desconto.toFixed(2)}</span>
+                        </div>
                       )}
                       {venda.taxa > 0 && (
-                        <div>Taxa: +R$ {venda.taxa.toFixed(2)}</div>
+                        <div className={styles.vendaDetailsRow}>
+                          <span>Taxa: +R$ {venda.taxa.toFixed(2)}</span>
+                        </div>
                       )}
                     </div>
-                    <div style={{ fontWeight: 600 }}>
-                      Subtotal: R$ {venda.subtotal.toFixed(2)}
+                    <div className={`${styles.vendaDetailsRow} ${styles.vendaDetailsLabel}`}>
+                      <span>Subtotal: R$ {venda.subtotal.toFixed(2)}</span>
                     </div>
                   </div>
                 ) : null}

@@ -726,7 +726,6 @@ export default function ContasAPagarPage() {
                     className={styles.input}
                     value={formData.valorTotal ? formatCurrency(parseFloat(formData.valorTotal)) : ''}
                     disabled
-                    style={{ backgroundColor: '#f3f4f6', color: '#6b7280' }}
                   />
                 </div>
 

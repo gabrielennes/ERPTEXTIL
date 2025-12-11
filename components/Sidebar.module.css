@@ -1,14 +1,15 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0;
   top: 0;
   overflow-y: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .logo {
@@ -16,7 +17,7 @@
   align-items: center;
   gap: 16px;
   padding: 24px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .logoIcon {
@@ -36,12 +37,12 @@
 .logoTitle {
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .logoSubtitle {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .nav {
@@ -65,7 +66,7 @@
   border-radius: 8px;
   text-decoration: none;
   transition: all 0.2s;
-  color: #6b7280;
+  color: var(--text-secondary);
   border: none;
   background: none;
   cursor: pointer;
@@ -74,12 +75,12 @@
 }
 
 .menuItem:hover {
-  background: #f3f4f6;
+  background: var(--hover-bg);
 }
 
 .menuItem.active {
-  background: #f3f4f6;
-  color: #1e40af;
+  background: var(--active-bg);
+  color: var(--active-color);
 }
 
 .menuItemWithSubs {
@@ -88,7 +89,7 @@
 
 .chevron {
   font-size: 10px;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   transition: transform 0.2s;
   margin-left: auto;
   transform: rotate(0deg);
@@ -115,18 +116,18 @@
   border-radius: 8px;
   text-decoration: none;
   transition: all 0.2s;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .subMenuItem:hover {
-  background: #f9fafb;
-  color: #1e40af;
+  background: var(--hover-bg);
+  color: var(--active-color);
 }
 
 .subMenuItem.subActive {
-  background: #eff6ff;
-  color: #1e40af;
+  background: var(--active-bg);
+  color: var(--active-color);
   font-weight: 500;
 }
 
@@ -159,7 +160,7 @@
 
 .subMenuDescription {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--text-tertiary);
 }
 
 .menuIcon {
@@ -196,8 +197,38 @@
 
 .userSection {
   padding: 16px 12px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.themeToggle:hover {
+  background: var(--hover-bg);
+  color: var(--active-color);
+}
+
+.themeToggleIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: currentColor;
 }
 
 .userInfo {
@@ -229,7 +260,7 @@
 .userName {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -238,7 +269,7 @@
 
 .userRole {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -262,18 +293,18 @@
   transition: all 0.2s;
   font-size: 14px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   width: 100%;
   text-align: left;
 }
 
 .actionButton:hover {
-  background: #f3f4f6;
-  color: #1e40af;
+  background: var(--hover-bg);
+  color: var(--active-color);
 }
 
 .actionButton:active {
-  background: #e5e7eb;
+  background: var(--bg-tertiary);
 }
 
 .actionIcon {

@@ -10,16 +10,17 @@
   align-items: center;
   margin-bottom: 24px;
   padding: 12px 20px;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .pageTitle {
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -42,23 +43,25 @@
 }
 
 .rightPanel {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px var(--shadow);
   padding: 24px;
   position: sticky;
   top: 24px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .leitorBox {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .leitorTitulo {
@@ -68,18 +71,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .leitorCamera {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   min-height: 240px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   margin-bottom: 16px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--border-color);
   overflow: hidden;
   position: relative;
 }
@@ -99,6 +102,83 @@
   justify-content: center;
 }
 
+.leitorInativo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.leitorInativoText {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.instrucoesText {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.produtoSku {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.produtoMarca {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.produtoPreco {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.produtoDescricao {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.descontoText {
+  color: #dc2626;
+}
+
+.taxaText {
+  color: #10b981;
+}
+
+.infoBox {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: var(--bg-tertiary);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.infoBoxTitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.infoBoxText {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.smallText {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .leitorButton {
   background: #1f2937;
   border: 1px solid #111827;
@@ -110,12 +190,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .leitorButton:hover {
   background: #111827;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .leitorButton:disabled {
@@ -127,12 +207,14 @@
   width: 100%;
   padding: 12px 16px;
   font-size: 16px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   margin-top: 0;
   margin-bottom: 12px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s ease;
   box-sizing: border-box;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .leitorInput:focus {
@@ -153,13 +235,13 @@
 }
 
 .leitorInstrucoes {
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   border-radius: 8px;
-  color: #374151;
+  color: var(--text-secondary);
   padding: 16px;
   font-size: 13px;
   margin-top: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
 }
 
 .leitorInstrucoes ul {
@@ -172,11 +254,12 @@
 }
 
 .buscaBox {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .buscaTitulo {
@@ -186,7 +269,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .buscaInputContainer {
@@ -199,9 +282,11 @@
   flex: 1;
   padding: 12px 16px;
   font-size: 16px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s ease;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .buscaInput:focus {
@@ -221,12 +306,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .buscarButton:hover:not(:disabled) {
   background: #111827;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .buscarButton:disabled {
@@ -258,8 +343,8 @@
 }
 
 .produtoCard {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -272,6 +357,12 @@
   flex: 1;
 }
 
+.produtoNome {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
 .produtoActions {
   display: flex;
   gap: 8px;
@@ -279,21 +370,21 @@
 
 .viewButton {
   padding: 8px 16px;
-  background: #f9fafb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .viewButton:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .addButton {
@@ -306,20 +397,20 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .addButton:hover {
   background: #047857;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .produtoBox {
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   padding: 16px;
   border-radius: 8px;
   margin-top: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
 }
 
 .addCartButton {
@@ -334,19 +425,19 @@
   cursor: pointer;
   transition: all 0.2s ease;
   flex: 1;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .addCartButton:hover {
   background: #047857;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .carrinhoTitulo {
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 20px;
-  color: #111827;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -358,7 +449,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   text-align: center;
 }
 
@@ -385,10 +476,10 @@
 .carrinhoItem {
   display: flex;
   align-items: flex-start;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   gap: 16px;
 }
 
@@ -400,8 +491,8 @@
 }
 
 .quantidadeButton {
-  background: white;
-  border: 1px solid #d1d5db;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   width: 32px;
   height: 32px;
@@ -411,12 +502,12 @@
   cursor: pointer;
   font-size: 18px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
   transition: background 0.2s;
 }
 
 .quantidadeButton:hover {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
 }
 
 .quantidadeValue {
@@ -424,6 +515,7 @@
   text-align: center;
   font-weight: 600;
   font-size: 16px;
+  color: var(--text-primary);
 }
 
 .removeItemButton {
@@ -448,7 +540,7 @@
 .resumoPedido {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -458,7 +550,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .resumoTotal {
@@ -466,16 +558,16 @@
   justify-content: space-between;
   font-size: 18px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--active-color);
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .metodoPagamento {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .pagamentoButtons {
@@ -488,19 +580,19 @@
   flex: 1;
   min-width: 100px;
   padding: 10px 16px;
-  background: white;
-  border: 1px solid #d1d5db;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .pagamentoButton:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
 }
 
 .pagamentoButtonActive {
@@ -517,7 +609,7 @@
 .actionButtons {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -534,12 +626,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .finalizarButton:hover:not(:disabled) {
   background: #047857;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .finalizarButton:disabled {
@@ -550,21 +642,21 @@
 .limparButton {
   width: 100%;
   padding: 12px;
-  background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .limparButton:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .limparButton:disabled {
@@ -578,17 +670,17 @@
 }
 
 .carrinhoLista::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--bg-tertiary);
   border-radius: 10px;
 }
 
 .carrinhoLista::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-color);
   border-radius: 10px;
 }
 
 .carrinhoLista::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-tertiary);
 }
 
 .rightPanel::-webkit-scrollbar {
@@ -596,17 +688,17 @@
 }
 
 .rightPanel::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--bg-tertiary);
   border-radius: 10px;
 }
 
 .rightPanel::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-color);
   border-radius: 10px;
 }
 
 .rightPanel::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-tertiary);
 }
 
 /* Responsividade */

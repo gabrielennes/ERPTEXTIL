@@ -209,7 +209,7 @@ export default function ExtratoMovimentacaoPage() {
       <div className={styles.filtersSection}>
         <div className={styles.filtersHeader}>
           <div className={styles.filtersTitle}>
-            <FilterIcon size={18} color="#6b7280" />
+            <FilterIcon size={18} color="currentColor" />
             <span>Filtros</span>
           </div>
           {temFiltrosAtivos && (
@@ -329,6 +329,7 @@ export default function ExtratoMovimentacaoPage() {
     </div>
   )
 }
+
 
 
 

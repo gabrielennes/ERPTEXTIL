@@ -677,49 +677,6 @@ export function PieChartIcon({ className = '', size = 24, color = 'currentColor'
   )
 }
 
-// Ícone de integrações/plug
-export function PlugIcon({ className = '', size = 24, color = 'currentColor' }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2v6" />
-      <path d="M8 8h8" />
-      <path d="M6 8h12v6a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z" />
-      <path d="M10 18v4" />
-      <path d="M14 18v4" />
-    </svg>
-  )
-}
-
-// Ícone de ecommerce/shopping
-export function ShoppingBagIcon({ className = '', size = 24, color = 'currentColor' }: IconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-  )
-}
 
 // Ícone de arquivo/documento
 export function FileTextIcon({ className = '', size = 24, color = 'currentColor' }: IconProps) {

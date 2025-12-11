@@ -2,8 +2,9 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 32px 24px;
-  background: #f9fafb;
+  background: var(--bg-primary);
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .header {
@@ -16,14 +17,14 @@
 .title {
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
@@ -54,11 +55,12 @@
 
 /* Filtros */
 .filtersSection {
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 24px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .filtersHeader {
@@ -74,7 +76,7 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -113,41 +115,42 @@
 .filterLabel {
   font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .filterInput {
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border, #d1d5db);
   border-radius: 6px;
   font-size: 14px;
-  color: #111827;
-  background: white;
+  color: var(--text-primary);
+  background: var(--input-bg, var(--bg-secondary));
   transition: all 0.2s ease;
   font-family: inherit;
 }
 
 .filterInput:focus {
   outline: none;
-  border-color: #1f2937;
-  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+  border-color: var(--input-focus-border, #3b82f6);
+  box-shadow: 0 0 0 3px var(--input-focus-shadow, rgba(59, 130, 246, 0.1));
 }
 
 .filterInput::placeholder {
-  color: #9ca3af;
+  color: var(--text-tertiary);
 }
 
 /* Card de Saldo */
 .saldoCard {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 32px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 2px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 2px solid var(--border-color);
   text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .saldoHeader {
@@ -161,7 +164,7 @@
 .saldoTitle {
   font-size: 18px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .saldoValue {
@@ -179,11 +182,12 @@
 
 /* Card */
 .card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .cardHeader {
@@ -202,20 +206,20 @@
 .cardTitle {
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .loading {
   text-align: center;
   padding: 48px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 16px;
 }
 
 .emptyState {
   text-align: center;
   padding: 48px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 16px;
 }
 
@@ -229,8 +233,8 @@
 }
 
 .table thead {
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .table th {
@@ -238,29 +242,29 @@
   text-align: left;
   font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
 }
 
 .table tbody tr:hover {
-  background: #f9fafb;
+  background: var(--hover-bg);
 }
 
 .table td {
   padding: 16px;
   font-size: 14px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .dataCell {
   white-space: nowrap;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .tipoCell {
@@ -339,6 +343,7 @@
     font-size: 36px;
   }
 }
+
 
 
 

@@ -10,6 +10,7 @@ interface RelatorioSemanal {
   diferenca: number
   percentualVariacao: number
   rankingSKUs: Array<{ sku: string; nome: string; quantidade: number; total: number }>
+  ultimos7Dias: Array<{ data: string; faturamento: number }>
   periodo: { inicio: string; fim: string }
 }
 
@@ -180,6 +181,44 @@ export default function RelatorioSemanalPage() {
           </div>
         </div>
       </div>
+
+      {/* Gráfico de Barras - Últimos 7 dias */}
+      {data.ultimos7Dias && data.ultimos7Dias.length > 0 && (
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Faturamento dos Últimos 7 Dias</h2>
+          <div className={styles.chartContainer}>
+            <div className={styles.barChart}>
+              {data.ultimos7Dias.map((dia, index) => {
+                const maxFaturamento = Math.max(...data.ultimos7Dias.map(d => d.faturamento), 1)
+                const alturaPercentual = maxFaturamento > 0 ? (dia.faturamento / maxFaturamento) * 100 : 0
+                
+                const dataObj = new Date(dia.data)
+                const diaSemana = dataObj.toLocaleDateString('pt-BR', { weekday: 'short' })
+                const diaMes = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+                
+                return (
+                  <div key={index} className={styles.barGroup}>
+                    <div className={styles.barWrapper}>
+                      <div
+                        className={styles.bar}
+                        style={{
+                          height: `${alturaPercentual}%`,
+                          minHeight: dia.faturamento > 0 ? '4px' : '0',
+                        }}
+                        title={formatCurrency(dia.faturamento)}
+                      />
+                    </div>
+                    <div className={styles.barLabel}>
+                      <div className={styles.barLabelDay}>{diaSemana}</div>
+                      <div className={styles.barLabelDate}>{diaMes}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Ranking dos 10 SKUs mais vendidos */}
       <div className={styles.card}>

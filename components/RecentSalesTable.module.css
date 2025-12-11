@@ -1,0 +1,110 @@
+.container {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thead {
+  border-bottom: 2px solid var(--border-color);
+}
+
+.th {
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.thRight {
+  text-align: right;
+}
+
+.tbody {
+  /* Estilos do tbody */
+}
+
+.tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.tr:hover {
+  background-color: var(--hover-bg);
+}
+
+.td {
+  padding: 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.tdSecondary {
+  color: var(--text-secondary);
+}
+
+.tdBold {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tdRight {
+  text-align: right;
+}
+
+.tdValue {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.tdSubtext {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.emptyIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #059669;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.emptyDescription {
+  font-size: 14px;
+  margin-top: 8px;
+  color: var(--text-secondary);
+}
+
+.productName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.productSubtext {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.parcelas {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+

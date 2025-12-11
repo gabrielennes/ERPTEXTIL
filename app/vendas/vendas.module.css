@@ -6,22 +6,22 @@
 .title {
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 32px;
 }
 
 .content {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 48px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
 }
 
 .emptyState {
@@ -40,12 +40,538 @@
 .emptyState h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .emptyState p {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
+}
+
+/* Header com botões */
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Botões de ação */
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+.actionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.actionButtonPrimary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border: 1px solid var(--button-primary-border);
+}
+
+.actionButtonPrimary:hover:not(:disabled) {
+  background-color: var(--button-primary-hover-bg);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.actionButtonSuccess {
+  background-color: #059669;
+  color: white;
+  border: 1px solid #047857;
+}
+
+.actionButtonSuccess:hover {
+  background-color: #047857;
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.actionButtonInfo {
+  background-color: #2563eb;
+  color: white;
+  border: 1px solid #1d4ed8;
+}
+
+.actionButtonInfo:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+/* Filtros */
+.filterSection {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px var(--shadow);
+  margin-bottom: 24px;
+  border: 1px solid var(--border-color);
+}
+
+.filterTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.filterRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.filterField {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filterLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.filterInput {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.filterInput:hover {
+  border-color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 1px var(--text-tertiary);
+}
+
+.filterInput:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px var(--input-focus-shadow);
+  background: var(--input-bg);
+}
+
+/* Estilos específicos para inputs de data */
+.filterInput[type="date"] {
+  cursor: pointer;
+  position: relative;
+  padding-right: 40px;
+}
+
+.filterInput[type="date"]:empty::before {
+  content: 'dd/mm/aaaa';
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* Ícone do calendário - mais visível */
+.filterInput[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+  filter: invert(0.4);
+  padding: 6px;
+  margin-left: 8px;
+  margin-right: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  background-size: 20px 20px;
+  width: 24px;
+  height: 24px;
+}
+
+.filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  filter: invert(0.2);
+  background-color: var(--hover-bg);
+  transform: scale(1.1);
+}
+
+/* Para dark mode, ajustar o ícone do calendário */
+[data-theme='dark'] .filterInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  opacity: 0.9;
+}
+
+[data-theme='dark'] .filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(1);
+  opacity: 1;
+  background-color: var(--hover-bg);
+  transform: scale(1.1);
+}
+
+/* Estilos para os campos de data editáveis */
+.filterInput[type="date"]::-webkit-datetime-edit-text {
+  color: var(--text-primary);
+  padding: 0 3px;
+  font-weight: 500;
+}
+
+.filterInput[type="date"]::-webkit-datetime-edit-month-field,
+.filterInput[type="date"]::-webkit-datetime-edit-day-field,
+.filterInput[type="date"]::-webkit-datetime-edit-year-field {
+  color: var(--text-primary);
+  padding: 0 3px;
+  font-weight: 500;
+  border-radius: 3px;
+}
+
+.filterInput[type="date"]::-webkit-datetime-edit-month-field:focus,
+.filterInput[type="date"]::-webkit-datetime-edit-day-field:focus,
+.filterInput[type="date"]::-webkit-datetime-edit-year-field:focus {
+  background-color: var(--input-focus-shadow);
+  color: var(--text-primary);
+  border-radius: 3px;
+  outline: none;
+}
+
+/* Placeholder quando vazio */
+.filterInput[type="date"]:invalid::-webkit-datetime-edit {
+  color: var(--text-tertiary);
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border: 1px solid var(--button-primary-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+.filterButton:hover {
+  background-color: var(--button-primary-hover-bg);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.actionButtonSecondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border: 1px solid var(--button-secondary-border);
+}
+
+.actionButtonSecondary:hover {
+  background-color: var(--button-secondary-hover-bg);
+  color: var(--text-primary);
+}
+
+/* Cards de métricas */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.metricLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.metricValue {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metricValueSuccess {
+  font-size: 24px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* Cards de vendas */
+.vendasList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vendaCard {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.vendaHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.vendaInfo {
+  flex: 1;
+}
+
+.vendaTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vendaIcon {
+  font-size: 20px;
+}
+
+.vendaTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.vendaStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.vendaActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vendaButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+.vendaButtonUpdate {
+  background-color: #2563eb;
+  color: white;
+  border: 1px solid #1d4ed8;
+}
+
+.vendaButtonUpdate:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.vendaButtonTransaction {
+  background-color: #7c3aed;
+  color: white;
+  border: 1px solid #6d28d9;
+}
+
+.vendaButtonTransaction:hover {
+  background-color: #6d28d9;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.vendaButtonApprove {
+  background-color: #059669;
+  color: white;
+  border: 1px solid #047857;
+}
+
+.vendaButtonApprove:hover {
+  background-color: #047857;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.vendaDate {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.vendaDateSub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.vendaTotal {
+  text-align: right;
+}
+
+.vendaTotalValue {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.vendaTotalMethod {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Itens da venda */
+.vendaItens {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.vendaItensTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.vendaItensList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vendaItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+}
+
+.vendaItemInfo {
+  flex: 1;
+}
+
+.vendaItemName {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.vendaItemSku {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.vendaItemQuantity {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.vendaItemPrice {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+/* Detalhes da venda */
+.vendaDetails {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.vendaDetails {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.vendaDetailsRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.vendaDetailsLabel {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Erro */
+.errorContainer {
+  text-align: center;
+  padding: 40px;
+  color: #ef4444;
+}
+
+.errorButton {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.errorButton:hover {
+  background-color: #2563eb;
 }
 

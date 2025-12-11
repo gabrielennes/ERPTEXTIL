@@ -13,28 +13,29 @@
 .title {
   font-size: 32px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .content {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 48px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .loading {
   text-align: center;
   padding: 48px;
   font-size: 18px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .emptyState {
@@ -53,13 +54,13 @@
 .emptyState h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .emptyState p {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 24px;
 }
 
@@ -85,11 +86,12 @@
 }
 
 .tableContainer {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px var(--shadow);
+  border: 1px solid var(--border-color);
   overflow-x: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .table {
@@ -98,8 +100,8 @@
 }
 
 .table thead {
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .table th {
@@ -107,22 +109,22 @@
   text-align: left;
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .table td {
   padding: 14px 16px;
   font-size: 14px;
-  color: #111827;
-  border-bottom: 1px solid #f3f4f6;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
 
 .table tbody tr:hover {
-  background: #f9fafb;
+  background: var(--hover-bg);
 }
 
 .table tbody tr {
@@ -135,27 +137,27 @@
 
 .productName {
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
   font-size: 14px;
 }
 
 .productBrand {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
 .productPrice {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .stockValue {
   font-weight: 600;
   font-size: 14px;
-  color: #111827;
+  color: var(--text-primary);
   font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
 }
 
@@ -167,21 +169,21 @@
 }
 
 .skuTag {
-  background: #f9fafb;
-  color: #374151;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   display: inline-block;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
   letter-spacing: 0.025em;
 }
 
 .skuMore {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-tertiary);
   font-weight: 500;
   font-style: italic;
 }
@@ -209,15 +211,15 @@
 }
 
 .viewButton {
-  background: #f9fafb;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
 .viewButton:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--hover-bg);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .editButton {

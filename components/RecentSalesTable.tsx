@@ -1,6 +1,7 @@
 'use client'
 
 import { ShoppingCartIcon } from '@/components/icons'
+import styles from './RecentSalesTable.module.css'
 
 interface Venda {
   id: string
@@ -40,27 +41,14 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
 
   if (vendas.length === 0) {
     return (
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '40px 20px',
-          color: '#6b7280',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: '#059669',
-          }}
-        >
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>
           <ShoppingCartIcon size={48} color="#059669" />
         </div>
-        <div style={{ fontSize: '16px', fontWeight: '500' }}>
+        <div className={styles.emptyTitle}>
           Nenhuma venda realizada ainda
         </div>
-        <div style={{ fontSize: '14px', marginTop: '8px' }}>
+        <div className={styles.emptyDescription}>
           As vendas aparecerão aqui quando forem realizadas
         </div>
       </div>
@@ -68,110 +56,38 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-        }}
-      >
+    <div className={styles.container}>
+      <table className={styles.table}>
         <thead>
-          <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-            <th
-              style={{
-                padding: '12px',
-                textAlign: 'left',
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#374151',
-                textTransform: 'uppercase',
-              }}
-            >
+          <tr className={styles.thead}>
+            <th className={styles.th}>
               N° Pedido
             </th>
-            <th
-              style={{
-                padding: '12px',
-                textAlign: 'left',
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#374151',
-                textTransform: 'uppercase',
-              }}
-            >
+            <th className={styles.th}>
               Produto
             </th>
-            <th
-              style={{
-                padding: '12px',
-                textAlign: 'right',
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#374151',
-                textTransform: 'uppercase',
-              }}
-            >
+            <th className={`${styles.th} ${styles.thRight}`}>
               Valor
             </th>
-            <th
-              style={{
-                padding: '12px',
-                textAlign: 'right',
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#374151',
-                textTransform: 'uppercase',
-              }}
-            >
+            <th className={`${styles.th} ${styles.thRight}`}>
               Data
             </th>
           </tr>
         </thead>
         <tbody>
           {vendas.map((venda) => (
-            <tr
-              key={venda.id}
-              style={{
-                borderBottom: '1px solid #e5e7eb',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f9fafb'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
-            >
-              <td
-                style={{
-                  padding: '12px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {venda.numero ? venda.numero.replace(/^PDV-?/i, '') : `#${venda.id.slice(-8).toUpperCase()}`}
+            <tr key={venda.id} className={styles.tr}>
+              <td className={`${styles.td} ${styles.tdBold}`}>
+                {venda.numero || `#${venda.id.slice(-8).toUpperCase()}`}
               </td>
-              <td
-                style={{
-                  padding: '12px',
-                  fontSize: '14px',
-                  color: '#374151',
-                }}
-              >
+              <td className={styles.td}>
                 {venda.produtos.length > 0 ? (
                   <div>
-                    <div style={{ fontWeight: '500' }}>
+                    <div className={styles.productName}>
                       {venda.produtos[0].nome}
                     </div>
                     {venda.produtos.length > 1 && (
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          color: '#6b7280',
-                          marginTop: '4px',
-                        }}
-                      >
+                      <div className={styles.productSubtext}>
                         +{venda.produtos.length - 1} outro(s) produto(s)
                       </div>
                     )}
@@ -180,30 +96,15 @@ export default function RecentSalesTable({ vendas }: RecentSalesTableProps) {
                   '-'
                 )}
               </td>
-              <td
-                style={{
-                  padding: '12px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#10b981',
-                  textAlign: 'right',
-                }}
-              >
+              <td className={`${styles.td} ${styles.tdRight} ${styles.tdValue}`}>
                 {formatCurrency(venda.total)}
                 {venda.parcelas && venda.parcelas > 1 && (
-                  <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                  <div className={styles.parcelas}>
                     {venda.parcelas}x no cartão
                   </div>
                 )}
               </td>
-              <td
-                style={{
-                  padding: '12px',
-                  fontSize: '14px',
-                  color: '#6b7280',
-                  textAlign: 'right',
-                }}
-              >
+              <td className={`${styles.td} ${styles.tdRight} ${styles.tdSecondary}`}>
                 {formatDate(venda.data)}
               </td>
             </tr>

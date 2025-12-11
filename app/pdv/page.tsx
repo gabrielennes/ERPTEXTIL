@@ -738,9 +738,9 @@ export default function PDVPage() {
                   muted
                 />
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                  <CameraIcon size={48} color="#9CA3AF" />
-                  <span style={{ fontSize: 14, color: '#6b7280' }}>Câmera inativa</span>
+                <div className={styles.leitorInativo}>
+                  <CameraIcon size={48} color="var(--text-tertiary)" />
+                  <span className={styles.leitorInativoText}>Câmera inativa</span>
                 </div>
               )}
             </div>
@@ -767,7 +767,7 @@ export default function PDVPage() {
                 </>
               )}
             </button>
-            <p style={{ marginTop: 20, marginBottom: 8, fontSize: 14, color: '#6b7280' }}>
+            <p className={styles.instrucoesText}>
               Ou digite o código manualmente:
             </p>
             <input
@@ -832,12 +832,12 @@ export default function PDVPage() {
                   <div key={prod.id} className={styles.produtoCard}>
                     <div className={styles.produtoInfo}>
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>{prod.nome}</div>
-                      <div style={{ fontSize: 13, color: '#6b7280' }}>
+                      <div className={styles.produtoSku}>
                         SKU: {prod.variacoes?.[0]?.sku || 'N/A'} | 
                         Preço: <strong>R$ {prod.precoVenda?.toFixed(2) || '0,00'}</strong>
                       </div>
                       {prod.marca && (
-                        <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>
+                        <div className={styles.produtoMarca}>
                           Marca: {prod.marca}
                         </div>
                       )}
@@ -871,7 +871,7 @@ export default function PDVPage() {
                 <div style={{ marginBottom: 12 }}>
                   <strong>{produto.nome}</strong>
                   {produto.variacoes?.[0]?.sku && (
-                    <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
+                    <div className={styles.produtoSku} style={{ marginTop: 4 }}>
                       SKU: {produto.variacoes[0].sku}
                     </div>
                   )}
@@ -934,8 +934,8 @@ export default function PDVPage() {
                   return (
                     <div className={styles.carrinhoItem} key={item.produto.id}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, marginBottom: 4 }}>{item.produto.nome}</div>
-                        <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 8 }}>
+                        <div style={{ fontWeight: 600, marginBottom: 4, color: 'var(--text-primary)' }}>{item.produto.nome}</div>
+                        <div className={styles.produtoDescricao}>
                           R$ {preco.toFixed(2)} cada
                         </div>
                         <div className={styles.quantidadeControls}>
@@ -978,12 +978,12 @@ export default function PDVPage() {
                   <span>R$ {subtotal.toFixed(2)}</span>
                 </div>
                 <div className={styles.resumoLinha}>
-                  <span style={{ color: '#dc2626' }}>Desconto:</span>
-                  <span style={{ color: '#dc2626' }}>-R$ {desconto.toFixed(2)}</span>
+                  <span className={styles.descontoText}>Desconto:</span>
+                  <span className={styles.descontoText}>-R$ {desconto.toFixed(2)}</span>
                 </div>
                 <div className={styles.resumoLinha}>
-                  <span style={{ color: '#10b981' }}>Taxa:</span>
-                  <span style={{ color: '#10b981' }}>+R$ {taxa.toFixed(2)}</span>
+                  <span className={styles.taxaText}>Taxa:</span>
+                  <span className={styles.taxaText}>+R$ {taxa.toFixed(2)}</span>
                 </div>
                 <div className={styles.resumoTotal}>
                   <span>Total:</span>
@@ -1041,7 +1041,7 @@ export default function PDVPage() {
                           </option>
                         ))}
                       </select>
-                      <div style={{ fontSize: 13, color: '#6b7280' }}>
+                      <div className={styles.produtoSku}>
                         ≈ R$ {(total / parcelas).toFixed(2)} por parcela
                       </div>
                     </div>
@@ -1134,11 +1134,11 @@ export default function PDVPage() {
                 ×
               </button>
             </div>
-            <div style={{ marginBottom: 16, padding: '12px', backgroundColor: '#f9fafb', borderRadius: 6, border: '1px solid #e5e7eb' }}>
-              <div style={{ fontSize: 13, color: '#374151' }}>
+            <div className={styles.infoBox}>
+              <div className={styles.infoBoxTitle}>
                 Parcelas selecionadas: <strong>{parcelas}x</strong>
               </div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>
+              <div className={styles.infoBoxText}>
                 Valor estimado por parcela: R$ {(total / parcelas).toFixed(2)}
               </div>
             </div>
@@ -1184,8 +1184,8 @@ export default function PDVPage() {
                   fontSize: 16,
                 }}
               />
-              <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <LightbulbIcon size={14} color="#6b7280" />
+              <div className={styles.smallText}>
+                <LightbulbIcon size={14} color="var(--text-secondary)" />
                 Dica: Use "APRO" para pagamentos aprovados no teste
               </div>
             </div>

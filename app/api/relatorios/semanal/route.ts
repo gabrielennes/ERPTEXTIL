@@ -108,12 +108,42 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.quantidade - a.quantidade)
       .slice(0, 10)
 
+    // Dados dos últimos 7 dias para o gráfico
+    const ultimos7Dias: Array<{ data: string; faturamento: number }> = []
+    
+    for (let i = 6; i >= 0; i--) {
+      const data = new Date(hoje)
+      data.setDate(hoje.getDate() - i)
+      data.setHours(0, 0, 0, 0)
+      
+      const fimDia = new Date(data)
+      fimDia.setHours(23, 59, 59, 999)
+      
+      const vendasDia = await prisma.venda.findMany({
+        where: {
+          createdAt: {
+            gte: data,
+            lte: fimDia,
+          },
+          statusPagamento: 'approved',
+        },
+      })
+      
+      const faturamentoDia = vendasDia.reduce((acc, v) => acc + v.total, 0)
+      
+      ultimos7Dias.push({
+        data: data.toISOString().split('T')[0],
+        faturamento: faturamentoDia,
+      })
+    }
+
     return NextResponse.json({
       totalFaturado,
       totalSemanaAnterior,
       diferenca,
       percentualVariacao,
       rankingSKUs,
+      ultimos7Dias,
       periodo: {
         inicio: inicioSemanaAtual.toISOString(),
         fim: fimSemanaAtual.toISOString(),

@@ -246,7 +246,6 @@ export default function CadastroFornecedorPage() {
               className={styles.input}
               value={new Date().toLocaleDateString('pt-BR')}
               disabled
-              style={{ backgroundColor: '#f3f4f6', color: '#6b7280' }}
             />
           </div>
         </div>
